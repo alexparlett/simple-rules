@@ -24,41 +24,41 @@
 
 package io.homonoia.rules.core;
 
-import io.homonoia.rules.api.RulesEngineParameters;
-import org.junit.Before;
-import org.junit.Test;
-
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import io.homonoia.rules.api.RulesEngineParameters;
+import org.junit.Before;
+import org.junit.Test;
+
 public class RulePriorityThresholdTest extends AbstractTest {
 
-    @Before
-    public void setup() throws Exception {
-        super.setup();
+  @Before
+  public void setup() throws Exception {
+    super.setup();
 
-        when(rule1.getPriority()).thenReturn(1);
-        when(rule1.evaluate(facts)).thenReturn(true);
+    when(rule1.getPriority()).thenReturn(1);
+    when(rule1.evaluate(facts)).thenReturn(true);
 
-        RulesEngineParameters parameters = new RulesEngineParameters().priorityThreshold(1);
-        rulesEngine = new DefaultRulesEngine(parameters);
-    }
+    RulesEngineParameters parameters = new RulesEngineParameters().priorityThreshold(1);
+    rulesEngine = new DefaultRulesEngine(parameters);
+  }
 
-    @Test
-    public void rulesThatExceedPriorityThresholdMustNotBeExecuted() throws Exception {
-        // Given
-        rules.register(rule1);
-        rules.register(rule2);
+  @Test
+  public void rulesThatExceedPriorityThresholdMustNotBeExecuted() throws Exception {
+    // Given
+    rules.register(rule1);
+    rules.register(rule2);
 
-        // When
-        rulesEngine.fire(rules, facts);
+    // When
+    rulesEngine.fire(rules, facts);
 
-        // Then
-        //Rule 1 should be executed
-        verify(rule1).execute(facts);
-        //Rule 2 should be skipped since its priority (2) exceeds priority threshold (1)
-        verify(rule2, never()).execute(facts);
-    }
+    // Then
+    //Rule 1 should be executed
+    verify(rule1).execute(facts);
+    //Rule 2 should be skipped since its priority (2) exceeds priority threshold (1)
+    verify(rule2, never()).execute(facts);
+  }
 
 }

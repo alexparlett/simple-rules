@@ -24,26 +24,26 @@
 
 package io.homonoia.rules.tutorials.web;
 
-import javax.servlet.http.HttpServletRequest;
 import io.homonoia.rules.annotation.Action;
 import io.homonoia.rules.annotation.Condition;
 import io.homonoia.rules.annotation.Fact;
 import io.homonoia.rules.annotation.Rule;
+import javax.servlet.http.HttpServletRequest;
 
 @Rule
 public class SuspiciousRequestRule {
 
-    static final String SUSPICIOUS = "suspicious";
+  static final String SUSPICIOUS = "suspicious";
 
-    @Condition
-    public boolean isSuspicious(@Fact("request") HttpServletRequest request) {
-        // criteria of suspicious could be based on ip, user-agent, etc.
-        // here for simplicity, it is based on the presence of a request parameter 'suspicious'
-        return request.getParameter(SUSPICIOUS) != null;
-    }
+  @Condition
+  public boolean isSuspicious(@Fact("request") HttpServletRequest request) {
+    // criteria of suspicious could be based on ip, user-agent, etc.
+    // here for simplicity, it is based on the presence of a request parameter 'suspicious'
+    return request.getParameter(SUSPICIOUS) != null;
+  }
 
-    @Action
-    public void setSuspicious(@Fact("request") HttpServletRequest request) {
-        request.setAttribute(SUSPICIOUS, true);
-    }
+  @Action
+  public void setSuspicious(@Fact("request") HttpServletRequest request) {
+    request.setAttribute(SUSPICIOUS, true);
+  }
 }

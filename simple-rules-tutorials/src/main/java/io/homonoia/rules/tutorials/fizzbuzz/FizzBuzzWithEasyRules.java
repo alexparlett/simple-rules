@@ -27,28 +27,29 @@ package io.homonoia.rules.tutorials.fizzbuzz;
 import io.homonoia.rules.api.Facts;
 import io.homonoia.rules.api.Rules;
 import io.homonoia.rules.api.RulesEngine;
-import io.homonoia.rules.core.DefaultRulesEngine;
 import io.homonoia.rules.api.RulesEngineParameters;
+import io.homonoia.rules.core.DefaultRulesEngine;
 
 public class FizzBuzzWithEasyRules {
-    public static void main(String[] args) {
-        // create rules engine
-        RulesEngineParameters parameters = new RulesEngineParameters().skipOnFirstAppliedRule(true);
-        RulesEngine fizzBuzzEngine = new DefaultRulesEngine(parameters);
 
-        // create rules
-        Rules rules = new Rules();
-        rules.register(new FizzRule());
-        rules.register(new BuzzRule());
-        rules.register(new FizzBuzzRule(new FizzRule(), new BuzzRule()));
-        rules.register(new NonFizzBuzzRule());
+  public static void main(String[] args) {
+    // create rules engine
+    RulesEngineParameters parameters = new RulesEngineParameters().skipOnFirstAppliedRule(true);
+    RulesEngine fizzBuzzEngine = new DefaultRulesEngine(parameters);
 
-        // fire rules
-        Facts facts = new Facts();
-        for (int i = 1; i <= 100; i++) {
-            facts.put("number", i);
-            fizzBuzzEngine.fire(rules, facts);
-            System.out.println();
-        }
+    // create rules
+    Rules rules = new Rules();
+    rules.register(new FizzRule());
+    rules.register(new BuzzRule());
+    rules.register(new FizzBuzzRule(new FizzRule(), new BuzzRule()));
+    rules.register(new NonFizzBuzzRule());
+
+    // fire rules
+    Facts facts = new Facts();
+    for (int i = 1; i <= 100; i++) {
+      facts.put("number", i);
+      fizzBuzzEngine.fire(rules, facts);
+      System.out.println();
     }
+  }
 }

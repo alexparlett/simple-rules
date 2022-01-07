@@ -26,12 +26,11 @@ package io.homonoia.rules.mvel;
 
 import io.homonoia.rules.api.Action;
 import io.homonoia.rules.api.Facts;
+import java.io.Serializable;
 import org.mvel2.MVEL;
 import org.mvel2.ParserContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.Serializable;
 
 /**
  * This class is an implementation of {@link Action} that uses
@@ -41,39 +40,39 @@ import java.io.Serializable;
  */
 public class MVELAction implements Action {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(MVELAction.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(MVELAction.class);
 
-    private final String expression;
-    private final Serializable compiledExpression;
+  private final String expression;
+  private final Serializable compiledExpression;
 
-    /**
-     * Create a new {@link MVELAction}.
-     *
-     * @param expression the action written in expression language
-     */
-    public MVELAction(String expression) {
-        this.expression = expression;
-        compiledExpression = MVEL.compileExpression(expression);
+  /**
+   * Create a new {@link MVELAction}.
+   *
+   * @param expression the action written in expression language
+   */
+  public MVELAction(String expression) {
+    this.expression = expression;
+    compiledExpression = MVEL.compileExpression(expression);
+  }
+
+  /**
+   * Create a new {@link MVELAction}.
+   *
+   * @param expression    the action written in expression language
+   * @param parserContext the MVEL parser context
+   */
+  public MVELAction(String expression, ParserContext parserContext) {
+    this.expression = expression;
+    compiledExpression = MVEL.compileExpression(expression, parserContext);
+  }
+
+  @Override
+  public void execute(Facts facts) {
+    try {
+      MVEL.executeExpression(compiledExpression, facts.asMap());
+    } catch (Exception e) {
+      LOGGER.error("Unable to evaluate expression: '" + expression + "' on facts: " + facts, e);
+      throw e;
     }
-
-    /**
-     * Create a new {@link MVELAction}.
-     *
-     * @param expression the action written in expression language
-     * @param parserContext the MVEL parser context
-     */
-    public MVELAction(String expression, ParserContext parserContext) {
-        this.expression = expression;
-        compiledExpression = MVEL.compileExpression(expression, parserContext);
-    }
-
-    @Override
-    public void execute(Facts facts) {
-        try {
-            MVEL.executeExpression(compiledExpression, facts.asMap());
-        } catch (Exception e) {
-            LOGGER.error("Unable to evaluate expression: '" + expression + "' on facts: " + facts, e);
-            throw e;
-        }
-    }
+  }
 }

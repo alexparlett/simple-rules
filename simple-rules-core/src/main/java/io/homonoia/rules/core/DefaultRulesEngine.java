@@ -24,12 +24,7 @@
 
 package io.homonoia.rules.core;
 
-import io.homonoia.rules.api.Fact;
-import io.homonoia.rules.api.Facts;
-import io.homonoia.rules.api.Rule;
-import io.homonoia.rules.api.Rules;
-import io.homonoia.rules.api.RulesEngine;
-import io.homonoia.rules.api.RulesEngineParameters;
+import io.homonoia.rules.api.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +34,7 @@ import java.util.Objects;
 
 /**
  * Default {@link RulesEngine} implementation.
- *
+ * <p>
  * Rules are fired according to their natural order which is priority by default.
  * This implementation iterates over the sorted set of rules, evaluates the condition
  * of each rule and executes its actions if the condition evaluates to true.

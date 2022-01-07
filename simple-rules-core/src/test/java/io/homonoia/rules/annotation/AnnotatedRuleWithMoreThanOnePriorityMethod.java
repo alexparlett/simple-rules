@@ -27,30 +27,30 @@ package io.homonoia.rules.annotation;
 @Rule
 public class AnnotatedRuleWithMoreThanOnePriorityMethod {
 
-    private boolean executed;
+  private boolean executed;
 
-    @Condition
-    public boolean when() {
-        return true;
-    }
+  @Condition
+  public boolean when() {
+    return true;
+  }
 
-    @Action
-    public void then() {
-        executed = true;
-    }
+  @Action
+  public void then() {
+    executed = true;
+  }
 
-    @Priority
-    public int getPriority() {
-        return 0;
-    }
+  @Priority
+  public int getPriority() {
+    return 0;
+  }
 
-    @Priority
-    public int getRulePriority() {
-        return 1;
-    }
+  @Priority
+  public int getRulePriority() {
+    return 1;
+  }
 
-    public boolean isExecuted() {
-        return executed;
-    }
+  public boolean isExecuted() {
+    return executed;
+  }
 
 }

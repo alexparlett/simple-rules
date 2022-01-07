@@ -28,7 +28,6 @@ import io.homonoia.rules.api.Facts;
 import io.homonoia.rules.api.Rule;
 import io.homonoia.rules.core.BasicRule;
 import io.homonoia.rules.core.RuleProxy;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -44,76 +43,78 @@ import java.util.TreeSet;
  */
 public abstract class CompositeRule extends BasicRule {
 
-    /**
-     * The set of composing rules.
-     */
-    protected Set<Rule> rules;
-    private final Map<Object, Rule> proxyRules;
+  /**
+   * The set of composing rules.
+   */
+  protected Set<Rule> rules;
+  private final Map<Object, Rule> proxyRules;
 
-    /**
-     * Create a new {@link CompositeRule}.
-     */
-    public CompositeRule() {
-        this(Rule.DEFAULT_NAME, Rule.DEFAULT_DESCRIPTION, Rule.DEFAULT_PRIORITY);
+  /**
+   * Create a new {@link CompositeRule}.
+   */
+  public CompositeRule() {
+    this(Rule.DEFAULT_NAME, Rule.DEFAULT_DESCRIPTION, Rule.DEFAULT_PRIORITY);
+  }
+
+  /**
+   * Create a new {@link CompositeRule}.
+   *
+   * @param name rule name
+   */
+  public CompositeRule(final String name) {
+    this(name, Rule.DEFAULT_DESCRIPTION, Rule.DEFAULT_PRIORITY);
+  }
+
+  /**
+   * Create a new {@link CompositeRule}.
+   *
+   * @param name        rule name
+   * @param description rule description
+   */
+  public CompositeRule(final String name, final String description) {
+    this(name, description, Rule.DEFAULT_PRIORITY);
+  }
+
+  /**
+   * Create a new {@link CompositeRule}.
+   *
+   * @param name        rule name
+   * @param description rule description
+   * @param priority    rule priority
+   */
+  public CompositeRule(final String name, final String description, final int priority) {
+    super(name, description, priority);
+    rules = new TreeSet<>();
+    proxyRules = new HashMap<>();
+  }
+
+  @Override
+  public abstract boolean evaluate(Facts facts);
+
+  @Override
+  public abstract void execute(Facts facts) throws Exception;
+
+  /**
+   * Add a rule to the composite rule.
+   *
+   * @param rule the rule to add
+   */
+  public void addRule(final Object rule) {
+    Rule proxy = RuleProxy.asRule(rule);
+    rules.add(proxy);
+    proxyRules.put(rule, proxy);
+  }
+
+  /**
+   * Remove a rule from the composite rule.
+   *
+   * @param rule the rule to remove
+   */
+  public void removeRule(final Object rule) {
+    Rule proxy = proxyRules.get(rule);
+    if (proxy != null) {
+      rules.remove(proxy);
     }
-
-    /**
-     * Create a new {@link CompositeRule}.
-     *
-     * @param name rule name
-     */
-    public CompositeRule(final String name) {
-        this(name, Rule.DEFAULT_DESCRIPTION, Rule.DEFAULT_PRIORITY);
-    }
-
-    /**
-     * Create a new {@link CompositeRule}.
-     *
-     * @param name rule name
-     * @param description rule description
-     */
-    public CompositeRule(final String name, final String description) {
-        this(name, description, Rule.DEFAULT_PRIORITY);
-    }
-
-    /**
-     * Create a new {@link CompositeRule}.
-     *
-     * @param name rule name
-     * @param description rule description
-     * @param priority rule priority
-     */
-    public CompositeRule(final String name, final String description, final int priority) {
-        super(name, description, priority);
-        rules = new TreeSet<>();
-        proxyRules = new HashMap<>();
-    }
-
-    @Override
-    public abstract boolean evaluate(Facts facts);
-
-    @Override
-    public abstract void execute(Facts facts) throws Exception;
-
-    /**
-     * Add a rule to the composite rule.
-     * @param rule the rule to add
-     */
-    public void addRule(final Object rule) {
-        Rule proxy = RuleProxy.asRule(rule);
-        rules.add(proxy);
-        proxyRules.put(rule, proxy);
-    }
-
-    /**
-     * Remove a rule from the composite rule.
-     * @param rule the rule to remove
-     */
-    public void removeRule(final Object rule) {
-        Rule proxy = proxyRules.get(rule);
-        if (proxy != null) {
-            rules.remove(proxy);
-        }
-    }
+  }
 
 }

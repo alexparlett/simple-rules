@@ -29,13 +29,13 @@ import io.homonoia.rules.api.Facts;
 @Rule
 public class AnnotatedRuleWithMultipleAnnotatedParametersAndOneParameterOfTypeFacts {
 
-    @Condition
-    public boolean when(@Fact("fact1") Object fact1, @Fact("fact2") Object fact2, Facts facts) {
-        return true;
-    }
+  @Condition
+  public boolean when(@Fact("fact1") Object fact1, @Fact("fact2") Object fact2, Facts facts) {
+    return true;
+  }
 
-    @Action
-    public void then(@Fact("fact1") Object fact1, @Fact("fact2") Object fact2, Facts facts) {
-    }
+  @Action
+  public void then(@Fact("fact1") Object fact1, @Fact("fact2") Object fact2, Facts facts) {
+  }
 
 }

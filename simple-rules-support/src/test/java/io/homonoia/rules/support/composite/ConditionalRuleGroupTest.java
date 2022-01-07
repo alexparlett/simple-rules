@@ -24,6 +24,8 @@
 
 package io.homonoia.rules.support.composite;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import io.homonoia.rules.annotation.Action;
 import io.homonoia.rules.annotation.Condition;
 import io.homonoia.rules.annotation.Priority;
@@ -32,311 +34,312 @@ import io.homonoia.rules.api.Facts;
 import io.homonoia.rules.api.Rules;
 import io.homonoia.rules.core.BasicRule;
 import io.homonoia.rules.core.DefaultRulesEngine;
+import java.util.ArrayList;
+import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
 public class ConditionalRuleGroupTest {
 
-    private static List<String> actions = new ArrayList<>();
+  private static List<String> actions = new ArrayList<>();
 
-    private TestRule rule1, rule2, conditionalRule;
-    private ConditionalRuleGroup conditionalRuleGroup;
+  private TestRule rule1, rule2, conditionalRule;
+  private ConditionalRuleGroup conditionalRuleGroup;
 
-    private Facts facts = new Facts();
-    private Rules rules = new Rules();
+  private Facts facts = new Facts();
+  private Rules rules = new Rules();
 
-    private DefaultRulesEngine rulesEngine = new DefaultRulesEngine();
+  private DefaultRulesEngine rulesEngine = new DefaultRulesEngine();
 
-    @Before
-    public void setUp() {
-        conditionalRule = new TestRule("conditionalRule", "description0", 0, true);
-        rule1 = new TestRule("rule1", "description1", 1, true);
-        rule2 = new TestRule("rule2", "description2", 2, true);
-        conditionalRuleGroup = new ConditionalRuleGroup();
-        conditionalRuleGroup.addRule(rule1);
-        conditionalRuleGroup.addRule(rule2);
-        conditionalRuleGroup.addRule(conditionalRule);
-        rules.register(conditionalRuleGroup);
+  @Before
+  public void setUp() {
+    conditionalRule = new TestRule("conditionalRule", "description0", 0, true);
+    rule1 = new TestRule("rule1", "description1", 1, true);
+    rule2 = new TestRule("rule2", "description2", 2, true);
+    conditionalRuleGroup = new ConditionalRuleGroup();
+    conditionalRuleGroup.addRule(rule1);
+    conditionalRuleGroup.addRule(rule2);
+    conditionalRuleGroup.addRule(conditionalRule);
+    rules.register(conditionalRuleGroup);
+  }
+
+  @After
+  public void tearDown() {
+    rules.clear();
+    actions.clear();
+  }
+
+  @Test
+  public void rulesMustNotBeExecutedIfConditionalRuleEvaluatesToFalse() {
+    // Given
+    conditionalRule.setEvaluationResult(false);
+
+    // When
+    rulesEngine.fire(rules, facts);
+
+    // Then
+    /*
+     * The composing rules should not be executed
+     * since the conditional rule evaluate to FALSE
+     */
+
+    // primaryRule should not be executed
+    Assertions.assertThat(conditionalRule.isExecuted()).isFalse();
+    //Rule 1 should not be executed
+    Assertions.assertThat(rule1.isExecuted()).isFalse();
+    //Rule 2 should not be executed
+    Assertions.assertThat(rule2.isExecuted()).isFalse();
+  }
+
+  @Test
+  public void selectedRulesMustBeExecutedIfConditionalRuleEvaluatesToTrue() {
+    // Given
+    rule1.setEvaluationResult(false);
+
+    // When
+    rulesEngine.fire(rules, facts);
+
+    // Then
+    /*
+     * Selected composing rules should be executed
+     * since the conditional rule evaluates to TRUE
+     */
+
+    // primaryRule should be executed
+    Assertions.assertThat(conditionalRule.isExecuted()).isTrue();
+    //Rule 1 should not be executed
+    Assertions.assertThat(rule1.isExecuted()).isFalse();
+    //Rule 2 should be executed
+    Assertions.assertThat(rule2.isExecuted()).isTrue();
+  }
+
+  @Test
+  public void whenARuleIsRemoved_thenItShouldNotBeEvaluated() {
+    // Given
+    conditionalRuleGroup.removeRule(rule2);
+
+    // When
+    rulesEngine.fire(rules, facts);
+
+    // Then
+    // primaryRule should be executed
+    Assertions.assertThat(conditionalRule.isExecuted()).isTrue();
+    //Rule 1 should be executed
+    Assertions.assertThat(rule1.isExecuted()).isTrue();
+    // Rule 2 should not be executed
+    Assertions.assertThat(rule2.isExecuted()).isFalse();
+  }
+
+  @Test
+  public void testCompositeRuleWithAnnotatedComposingRules() {
+    // Given
+    MyRule rule = new MyRule();
+    conditionalRuleGroup.addRule(rule);
+
+    // When
+    rulesEngine.fire(rules, facts);
+
+    // Then
+    Assertions.assertThat(conditionalRule.isExecuted()).isTrue();
+    assertThat(rule.isExecuted()).isTrue();
+  }
+
+  @Test
+  public void whenAnnotatedRuleIsRemoved_thenItsProxyShouldBeRetrieved() {
+    // Given
+    MyRule rule = new MyRule();
+    MyAnnotatedRule annotatedRule = new MyAnnotatedRule();
+    conditionalRuleGroup.addRule(rule);
+    conditionalRuleGroup.addRule(annotatedRule);
+    conditionalRuleGroup.removeRule(annotatedRule);
+
+    // When
+    rulesEngine.fire(rules, facts);
+
+    // Then
+    Assertions.assertThat(conditionalRule.isExecuted()).isTrue();
+    assertThat(rule.isExecuted()).isTrue();
+    assertThat(annotatedRule.isExecuted()).isFalse();
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void twoRulesWithSameHighestPriorityIsNotAllowed() {
+    conditionalRuleGroup.addRule(new MyOtherRule(0));// same priority as conditionalRule
+    conditionalRuleGroup.addRule(new MyOtherRule(1));
+    conditionalRuleGroup.addRule(new MyRule());
+    conditionalRuleGroup.evaluate(facts);
+  }
+
+  @Test
+  public void twoRulesWithSamePriorityIsAllowedIfAnotherRuleHasHigherPriority() {
+    MyOtherRule rule1 = new MyOtherRule(3);
+    conditionalRuleGroup.addRule(rule1);
+    conditionalRuleGroup.addRule(new MyOtherRule(2));
+    conditionalRuleGroup.addRule(new MyRule());
+    rules.register(conditionalRuleGroup);
+    rulesEngine.fire(rules, facts);
+    assertThat(rule1.isExecuted()).isTrue();
+  }
+
+  @Test
+  public void aRuleWithoutPriorityHasLowestPriority() {
+    // given
+    UnprioritizedRule rule = new UnprioritizedRule();
+    conditionalRuleGroup.addRule(rule);
+
+    // when
+    rulesEngine.fire(rules, facts);
+
+    // then
+    assertThat(actions).containsExactly(
+        "conditionalRule",
+        "rule1",
+        "rule2",
+        "UnprioritizedRule");
+  }
+
+  @Test
+  public void testComposingRulesExecutionOrder() {
+    // When
+    rulesEngine.fire(rules, facts);
+
+    // Then
+    // rule 1 has higher priority than rule 2 (lower values for highers priorities),
+    // it should be executed first
+    assertThat(actions).containsExactly(
+        "conditionalRule",
+        "rule1",
+        "rule2");
+  }
+
+  @Rule
+  public static class MyRule {
+
+    boolean executed;
+
+    @Condition
+    public boolean when() {
+      return true;
     }
 
-    @After
-    public void tearDown() {
-        rules.clear();
-        actions.clear();
+    @Action
+    public void then() {
+      executed = true;
     }
 
-    @Test
-    public void rulesMustNotBeExecutedIfConditionalRuleEvaluatesToFalse() {
-        // Given
-        conditionalRule.setEvaluationResult(false);
-
-        // When
-        rulesEngine.fire(rules, facts);
-
-        // Then
-        /*
-         * The composing rules should not be executed
-         * since the conditional rule evaluate to FALSE
-         */
-
-        // primaryRule should not be executed
-        Assertions.assertThat(conditionalRule.isExecuted()).isFalse();
-        //Rule 1 should not be executed
-        Assertions.assertThat(rule1.isExecuted()).isFalse();
-        //Rule 2 should not be executed
-        Assertions.assertThat(rule2.isExecuted()).isFalse();
+    @Priority
+    public int priority() {
+      return 2;
     }
 
-    @Test
-    public void selectedRulesMustBeExecutedIfConditionalRuleEvaluatesToTrue() {
-        // Given
-        rule1.setEvaluationResult(false);
-
-        // When
-        rulesEngine.fire(rules, facts);
-
-        // Then
-        /*
-         * Selected composing rules should be executed
-         * since the conditional rule evaluates to TRUE
-         */
-
-        // primaryRule should be executed
-        Assertions.assertThat(conditionalRule.isExecuted()).isTrue();
-        //Rule 1 should not be executed
-        Assertions.assertThat(rule1.isExecuted()).isFalse();
-        //Rule 2 should be executed
-        Assertions.assertThat(rule2.isExecuted()).isTrue();
+    public boolean isExecuted() {
+      return executed;
     }
 
-    @Test
-    public void whenARuleIsRemoved_thenItShouldNotBeEvaluated() {
-        // Given
-        conditionalRuleGroup.removeRule(rule2);
+  }
 
-        // When
-        rulesEngine.fire(rules, facts);
+  @Rule
+  public static class MyAnnotatedRule {
 
-        // Then
-        // primaryRule should be executed
-        Assertions.assertThat(conditionalRule.isExecuted()).isTrue();
-        //Rule 1 should be executed
-        Assertions.assertThat(rule1.isExecuted()).isTrue();
-        // Rule 2 should not be executed
-        Assertions.assertThat(rule2.isExecuted()).isFalse();
+    private boolean executed;
+
+    @Condition
+    public boolean evaluate() {
+      return true;
     }
 
-    @Test
-    public void testCompositeRuleWithAnnotatedComposingRules() {
-        // Given
-        MyRule rule = new MyRule();
-        conditionalRuleGroup.addRule(rule);
-
-        // When
-        rulesEngine.fire(rules, facts);
-
-        // Then
-        Assertions.assertThat(conditionalRule.isExecuted()).isTrue();
-        assertThat(rule.isExecuted()).isTrue();
+    @Action
+    public void execute() {
+      executed = true;
     }
 
-    @Test
-    public void whenAnnotatedRuleIsRemoved_thenItsProxyShouldBeRetrieved() {
-        // Given
-        MyRule rule = new MyRule();
-        MyAnnotatedRule annotatedRule = new MyAnnotatedRule();
-        conditionalRuleGroup.addRule(rule);
-        conditionalRuleGroup.addRule(annotatedRule);
-        conditionalRuleGroup.removeRule(annotatedRule);
-
-        // When
-        rulesEngine.fire(rules, facts);
-
-        // Then
-        Assertions.assertThat(conditionalRule.isExecuted()).isTrue();
-        assertThat(rule.isExecuted()).isTrue();
-        assertThat(annotatedRule.isExecuted()).isFalse();
+    @Priority
+    public int priority() {
+      return 3;
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void twoRulesWithSameHighestPriorityIsNotAllowed() {
-        conditionalRuleGroup.addRule(new MyOtherRule(0));// same priority as conditionalRule
-        conditionalRuleGroup.addRule(new MyOtherRule(1));
-        conditionalRuleGroup.addRule(new MyRule());
-        conditionalRuleGroup.evaluate(facts);
+    public boolean isExecuted() {
+      return executed;
+    }
+  }
+
+  @Rule
+  public static class MyOtherRule {
+
+    boolean executed;
+    private int priority;
+
+    public MyOtherRule(int priority) {
+      this.priority = priority;
     }
 
-    @Test
-    public void twoRulesWithSamePriorityIsAllowedIfAnotherRuleHasHigherPriority() {
-        MyOtherRule rule1 = new MyOtherRule(3);
-        conditionalRuleGroup.addRule(rule1);
-        conditionalRuleGroup.addRule(new MyOtherRule(2));
-        conditionalRuleGroup.addRule(new MyRule());
-        rules.register(conditionalRuleGroup);
-        rulesEngine.fire(rules, facts);
-        assertThat(rule1.isExecuted()).isTrue();
+    @Condition
+    public boolean when() {
+      return true;
     }
 
-    @Test
-    public void aRuleWithoutPriorityHasLowestPriority() {
-        // given
-        UnprioritizedRule rule = new UnprioritizedRule();
-        conditionalRuleGroup.addRule(rule);
-
-        // when
-        rulesEngine.fire(rules, facts);
-
-        // then
-        assertThat(actions).containsExactly(
-                "conditionalRule",
-                "rule1",
-                "rule2",
-                "UnprioritizedRule");
+    @Action
+    public void then() {
+      executed = true;
     }
 
-    @Test
-    public void testComposingRulesExecutionOrder() {
-        // When
-        rulesEngine.fire(rules, facts);
-
-        // Then
-        // rule 1 has higher priority than rule 2 (lower values for highers priorities),
-        // it should be executed first
-        assertThat(actions).containsExactly(
-                "conditionalRule",
-                "rule1",
-                "rule2");
+    @Priority
+    public int priority() {
+      return priority;
     }
 
-    @Rule
-    public static class MyRule {
-        boolean executed;
-
-        @Condition
-        public boolean when() {
-            return true;
-        }
-
-        @Action
-        public void then() {
-            executed = true;
-        }
-
-        @Priority
-        public int priority() {
-            return 2;
-        }
-
-        public boolean isExecuted() {
-            return executed;
-        }
-
+    public boolean isExecuted() {
+      return executed;
     }
 
-    @Rule
-    public static class MyAnnotatedRule {
-        private boolean executed;
+  }
 
-        @Condition
-        public boolean evaluate() {
-            return true;
-        }
+  @Rule
+  public static class UnprioritizedRule {
 
-        @Action
-        public void execute() {
-            executed = true;
-        }
+    boolean executed;
 
-        @Priority
-        public int priority() {
-            return 3;
-        }
-
-        public boolean isExecuted() {
-            return executed;
-        }
+    @Condition
+    public boolean when() {
+      return true;
     }
 
-    @Rule
-    public static class MyOtherRule {
-        boolean executed;
-        private int priority;
-
-        public MyOtherRule(int priority) {
-            this.priority = priority;
-        }
-
-        @Condition
-        public boolean when() {
-            return true;
-        }
-
-        @Action
-        public void then() {
-            executed = true;
-        }
-
-        @Priority
-        public int priority() {
-            return priority;
-        }
-
-        public boolean isExecuted() {
-            return executed;
-        }
-
+    @Action
+    public void then() {
+      executed = true;
+      actions.add("UnprioritizedRule");
     }
 
-    @Rule
-    public static class UnprioritizedRule {
-        boolean executed;
-
-        @Condition
-        public boolean when() {
-            return true;
-        }
-
-        @Action
-        public void then() {
-            executed = true;
-            actions.add("UnprioritizedRule");
-        }
-
-        public boolean isExecuted() {
-            return executed;
-        }
-
+    public boolean isExecuted() {
+      return executed;
     }
 
-    public static class TestRule extends BasicRule {
+  }
 
-        boolean evaluationResult;
+  public static class TestRule extends BasicRule {
 
-        TestRule(String name, String description, int priority, boolean evaluationResult) {
-            super(name, description, priority);
-            this.evaluationResult = evaluationResult;
-        }
+    boolean evaluationResult;
 
-        @Override
-        public boolean evaluate(Facts facts) {
-            return evaluationResult;
-        }
-
-        @Override
-        public void execute(Facts facts) {
-            this.executed.set(true);
-            actions.add(name);
-        }
-
-        void setEvaluationResult(boolean evaluationResult) {
-            this.evaluationResult = evaluationResult;
-        }
+    TestRule(String name, String description, int priority, boolean evaluationResult) {
+      super(name, description, priority);
+      this.evaluationResult = evaluationResult;
     }
+
+    @Override
+    public boolean evaluate(Facts facts) {
+      return evaluationResult;
+    }
+
+    @Override
+    public void execute(Facts facts) {
+      this.executed.set(true);
+      actions.add(name);
+    }
+
+    void setEvaluationResult(boolean evaluationResult) {
+      this.evaluationResult = evaluationResult;
+    }
+  }
 }

@@ -24,48 +24,47 @@
 
 package io.homonoia.rules.core;
 
-import io.homonoia.rules.annotation.Rule;
 import io.homonoia.rules.annotation.Action;
 import io.homonoia.rules.annotation.Condition;
 import io.homonoia.rules.annotation.Fact;
+import io.homonoia.rules.annotation.Rule;
 import io.homonoia.rules.api.Facts;
 import io.homonoia.rules.api.Rules;
+import java.util.Map;
 import org.junit.Assert;
 import org.junit.Test;
-
-import java.util.Map;
 
 /**
  * Null facts are not accepted by design, a declared fact can be missing though.
  */
 public class MissingFactAnnotationParameterTest extends AbstractTest {
 
-    @Test
-    public void testMissingFact() {
-        Rules rules = new Rules();
-        rules.register(new AnnotatedParametersRule());
+  @Test
+  public void testMissingFact() {
+    Rules rules = new Rules();
+    rules.register(new AnnotatedParametersRule());
 
-        Facts facts = new Facts();
-        facts.put("fact1", new Object());
+    Facts facts = new Facts();
+    facts.put("fact1", new Object());
 
-        Map<io.homonoia.rules.api.Rule, Boolean> results = rulesEngine.check(rules, facts);
+    Map<io.homonoia.rules.api.Rule, Boolean> results = rulesEngine.check(rules, facts);
 
-        for (boolean b : results.values()) {
-            Assert.assertFalse(b);
-        }
+    for (boolean b : results.values()) {
+      Assert.assertFalse(b);
+    }
+  }
+
+  @Rule
+  public static class AnnotatedParametersRule {
+
+    @Condition
+    public boolean when(@Fact("fact1") Object fact1, @Fact("fact2") Object fact2) {
+      return fact1 != null && fact2 == null;
     }
 
-    @Rule
-    public static class AnnotatedParametersRule {
-
-        @Condition
-        public boolean when(@Fact("fact1") Object fact1, @Fact("fact2") Object fact2) {
-            return fact1 != null && fact2 == null;
-        }
-
-        @Action
-        public void then(@Fact("fact1") Object fact1, @Fact("fact2") Object fact2) {
-        }
-
+    @Action
+    public void then(@Fact("fact1") Object fact1, @Fact("fact2") Object fact2) {
     }
+
+  }
 }

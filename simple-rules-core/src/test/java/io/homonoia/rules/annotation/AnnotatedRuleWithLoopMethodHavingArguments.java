@@ -27,25 +27,25 @@ package io.homonoia.rules.annotation;
 @Rule
 public class AnnotatedRuleWithLoopMethodHavingArguments {
 
-    private boolean executed;
+  private boolean executed;
 
-    @Condition
-    private boolean when() {
-        return true;
-    }
+  @Condition
+  private boolean when() {
+    return true;
+  }
 
-    @Action
-    private void then() {
-        executed = true;
-    }
+  @Action
+  private void then() {
+    executed = true;
+  }
 
-    public boolean isExecuted() {
-        return executed;
-    }
+  public boolean isExecuted() {
+    return executed;
+  }
 
-    @Loop
-    public boolean getLoop(boolean i) {
-        return i;
-    }
+  @Loop
+  public boolean getLoop(boolean i) {
+    return i;
+  }
 
 }

@@ -24,9 +24,12 @@
 
 package io.homonoia.rules.spel;
 
-import org.assertj.core.api.Assertions;
+import static com.github.stefanbirkner.systemlambda.SystemLambda.tapSystemOutNormalized;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import io.homonoia.rules.api.Condition;
 import io.homonoia.rules.api.Facts;
+import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -34,75 +37,73 @@ import org.springframework.expression.BeanResolver;
 import org.springframework.expression.ParserContext;
 import org.springframework.expression.common.TemplateParserContext;
 
-import static com.github.stefanbirkner.systemlambda.SystemLambda.tapSystemOutNormalized;
-import static org.assertj.core.api.Assertions.assertThat;
-
 public class SpELConditionTest {
 
-    @Test
-    public void testSpELExpressionEvaluation() {
-        // given
-        Condition isAdult = new SpELCondition("#{ ['person'].age > 18 }");
-        Facts facts = new Facts();
-        facts.put("person", new Person("foo", 20));
-        // when
-        boolean evaluationResult = isAdult.evaluate(facts);
+  @Test
+  public void testSpELExpressionEvaluation() {
+    // given
+    Condition isAdult = new SpELCondition("#{ ['person'].age > 18 }");
+    Facts facts = new Facts();
+    facts.put("person", new Person("foo", 20));
+    // when
+    boolean evaluationResult = isAdult.evaluate(facts);
 
-        // then
-        assertThat(evaluationResult).isTrue();
-    }
+    // then
+    assertThat(evaluationResult).isTrue();
+  }
 
-    // Note this behaviour is different in MVEL, where a missing fact yields an exception
-    @Test
-    public void whenDeclaredFactIsNotPresent_thenShouldReturnFalse() {
-        // given
-        Condition isHot = new SpELCondition("#{ ['temperature'] > 30 }");
-        Facts facts = new Facts();
+  // Note this behaviour is different in MVEL, where a missing fact yields an exception
+  @Test
+  public void whenDeclaredFactIsNotPresent_thenShouldReturnFalse() {
+    // given
+    Condition isHot = new SpELCondition("#{ ['temperature'] > 30 }");
+    Facts facts = new Facts();
 
-        // when
-        boolean evaluationResult = isHot.evaluate(facts);
+    // when
+    boolean evaluationResult = isHot.evaluate(facts);
 
-        // then
-        assertThat(evaluationResult).isFalse();
-    }
+    // then
+    assertThat(evaluationResult).isFalse();
+  }
 
-    @Test
-    public void testSpELConditionWithExpressionAndParserContext() {
-        // given
-        ParserContext context = new TemplateParserContext("%{", "}"); // custom parser context
-        Condition condition = new SpELCondition("%{ T(java.lang.Integer).MAX_VALUE > 1 }", context);
-        Facts facts = new Facts();
+  @Test
+  public void testSpELConditionWithExpressionAndParserContext() {
+    // given
+    ParserContext context = new TemplateParserContext("%{", "}"); // custom parser context
+    Condition condition = new SpELCondition("%{ T(java.lang.Integer).MAX_VALUE > 1 }", context);
+    Facts facts = new Facts();
 
-        // when
-        boolean evaluationResult = condition.evaluate(facts);
+    // when
+    boolean evaluationResult = condition.evaluate(facts);
 
-        // then
-        assertThat(evaluationResult).isTrue();
-    }
+    // then
+    assertThat(evaluationResult).isTrue();
+  }
 
-    @Test
-    public void testSpELConditionWithExpressionAndParserContextAndBeanResolver() throws Exception {
+  @Test
+  public void testSpELConditionWithExpressionAndParserContextAndBeanResolver() throws Exception {
 
-        ApplicationContext applicationContext = new AnnotationConfigApplicationContext(MySpringAppConfig.class);
-        BeanResolver beanResolver = new SimpleBeanResolver(applicationContext);
+    ApplicationContext applicationContext = new AnnotationConfigApplicationContext(
+        MySpringAppConfig.class);
+    BeanResolver beanResolver = new SimpleBeanResolver(applicationContext);
 
-        SpELRule spELRule = new SpELRule(beanResolver);
-        // setting an condition to be evaluated
-        spELRule.when("#{ ['person'].age >= 18 }");
-        // provided an bean resolver that can resolve "myGreeter"
-        spELRule.then("#{ @myGreeter.greeting(#person.name) }");
+    SpELRule spELRule = new SpELRule(beanResolver);
+    // setting an condition to be evaluated
+    spELRule.when("#{ ['person'].age >= 18 }");
+    // provided an bean resolver that can resolve "myGreeter"
+    spELRule.then("#{ @myGreeter.greeting(#person.name) }");
 
-        // given
-        Facts facts = new Facts();
-        facts.put("person", new Person("jack", 19));
+    // given
+    Facts facts = new Facts();
+    facts.put("person", new Person("jack", 19));
 
-        // then
-        boolean evaluationResult = spELRule.evaluate(facts);
-        Assertions.assertThat(evaluationResult).isTrue();
+    // then
+    boolean evaluationResult = spELRule.evaluate(facts);
+    Assertions.assertThat(evaluationResult).isTrue();
 
-        String output = tapSystemOutNormalized(
-                () -> spELRule.execute(facts));
-        assertThat(output).isEqualTo("Bonjour jack!\n");
+    String output = tapSystemOutNormalized(
+        () -> spELRule.execute(facts));
+    assertThat(output).isEqualTo("Bonjour jack!\n");
 
-    }
+  }
 }

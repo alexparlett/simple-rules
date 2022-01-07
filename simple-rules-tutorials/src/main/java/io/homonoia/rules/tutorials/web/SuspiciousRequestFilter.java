@@ -25,6 +25,10 @@
 package io.homonoia.rules.tutorials.web;
 
 
+import io.homonoia.rules.api.Facts;
+import io.homonoia.rules.api.Rules;
+import io.homonoia.rules.api.RulesEngine;
+import io.homonoia.rules.core.DefaultRulesEngine;
 import java.io.IOException;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -33,34 +37,31 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebFilter;
-import io.homonoia.rules.api.Facts;
-import io.homonoia.rules.api.Rules;
-import io.homonoia.rules.api.RulesEngine;
-import io.homonoia.rules.core.DefaultRulesEngine;
 
 @WebFilter("/*")
 public class SuspiciousRequestFilter implements Filter {
 
-    private Rules rules;
-    private RulesEngine rulesEngine;
+  private Rules rules;
+  private RulesEngine rulesEngine;
 
-    @Override
-    public void init(FilterConfig filterConfig) {
-        rulesEngine = new DefaultRulesEngine();
-        rules = new Rules();
-        rules.register(new SuspiciousRequestRule());
-    }
+  @Override
+  public void init(FilterConfig filterConfig) {
+    rulesEngine = new DefaultRulesEngine();
+    rules = new Rules();
+    rules.register(new SuspiciousRequestRule());
+  }
 
-    @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain) throws IOException, ServletException {
-        Facts facts = new Facts();
-        facts.put("request", request);
-        rulesEngine.fire(rules, facts);
-        filterChain.doFilter(request, response);
-    }
+  @Override
+  public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain)
+      throws IOException, ServletException {
+    Facts facts = new Facts();
+    facts.put("request", request);
+    rulesEngine.fire(rules, facts);
+    filterChain.doFilter(request, response);
+  }
 
-    @Override
-    public void destroy() {
+  @Override
+  public void destroy() {
 
-    }
+  }
 }

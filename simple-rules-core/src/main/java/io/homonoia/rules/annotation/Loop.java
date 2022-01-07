@@ -24,11 +24,15 @@
 
 package io.homonoia.rules.annotation;
 
-import java.lang.annotation.*;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * Annotation to mark the method to execute to get rule loop status.
- * Must annotate any public method with no arguments and that returns an boolean value.
+ * Annotation to mark the method to execute to get rule loop status. Must annotate any public method
+ * with no arguments and that returns an boolean value.
  *
  * @author Alex Parlett (alex@kroo.com)
  */

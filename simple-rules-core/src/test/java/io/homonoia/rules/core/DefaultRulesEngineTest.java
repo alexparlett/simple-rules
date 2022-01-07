@@ -24,32 +24,25 @@
 
 package io.homonoia.rules.core;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.util.List;
-import java.util.Map;
-
-import io.homonoia.rules.annotation.Rule;
-import org.assertj.core.api.Assertions;
 import io.homonoia.rules.annotation.Action;
 import io.homonoia.rules.annotation.Condition;
 import io.homonoia.rules.annotation.Priority;
-import io.homonoia.rules.api.Facts;
-import io.homonoia.rules.api.RuleListener;
-import io.homonoia.rules.api.Rules;
-import io.homonoia.rules.api.RulesEngineListener;
-import io.homonoia.rules.api.RulesEngineParameters;
+import io.homonoia.rules.annotation.Rule;
+import io.homonoia.rules.api.*;
+import org.assertj.core.api.Assertions;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.Mock;
+
+import java.util.List;
+import java.util.Map;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.*;
 
 public class DefaultRulesEngineTest extends AbstractTest {
 
@@ -100,6 +93,11 @@ public class DefaultRulesEngineTest extends AbstractTest {
 
         // Then
         verify(rule1).execute(facts);
+
+        assertThat(rulesEngine.getHistory()).isNotNull();
+        assertThat(rulesEngine.getHistory().getExecutionStatus()).isNotNull();
+        assertThat(rulesEngine.getHistory().getExecutionStatus().size()).isEqualTo(1);
+        assertThat(rulesEngine.getHistory().getExecutionStatus().asMap()).hasEntrySatisfying(rule1, executionStatuses -> assertThat(executionStatuses).containsExactly(RuleExecutionStatus.EXECUTED));
     }
 
     @Test
@@ -113,6 +111,11 @@ public class DefaultRulesEngineTest extends AbstractTest {
 
         // Then
         verify(rule1, never()).execute(facts);
+
+        assertThat(rulesEngine.getHistory()).isNotNull();
+        assertThat(rulesEngine.getHistory().getExecutionStatus()).isNotNull();
+        assertThat(rulesEngine.getHistory().getExecutionStatus().size()).isEqualTo(1);
+        assertThat(rulesEngine.getHistory().getExecutionStatus().asMap()).hasEntrySatisfying(rule1, executionStatuses -> assertThat(executionStatuses).containsExactly(RuleExecutionStatus.SKIPPED));
     }
 
     @Test

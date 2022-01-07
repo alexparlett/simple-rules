@@ -24,81 +24,84 @@
 
 package io.homonoia.rules.core;
 
-import org.junit.Test;
-
-import java.lang.annotation.Annotation;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.lang.annotation.Annotation;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import org.junit.Test;
+
 public class UtilsTest {
 
-    @Test
-    public void findAnnotationWithClassWhereAnnotationIsPresent() {
-        Annotation foo = Utils.findAnnotation(Foo.class, AnnotationIsPresent.class);
+  @Test
+  public void findAnnotationWithClassWhereAnnotationIsPresent() {
+    Annotation foo = Utils.findAnnotation(Foo.class, AnnotationIsPresent.class);
 
-        assertCorrectAnnotationIsFound(Foo.class, foo);
-    }
+    assertCorrectAnnotationIsFound(Foo.class, foo);
+  }
 
-    @Test
-    public void findAnnotationWithClassWhereAnnotationIsPresentViaMetaAnnotation() {
-        Annotation foo = Utils.findAnnotation(Foo.class, AnnotationIsPresentViaMetaAnnotation.class);
+  @Test
+  public void findAnnotationWithClassWhereAnnotationIsPresentViaMetaAnnotation() {
+    Annotation foo = Utils.findAnnotation(Foo.class, AnnotationIsPresentViaMetaAnnotation.class);
 
-        assertCorrectAnnotationIsFound(Foo.class, foo);
-    }
+    assertCorrectAnnotationIsFound(Foo.class, foo);
+  }
 
-    @Test
-    public void findAnnotationWithClassWhereAnnotationIsNotPresent() {
-        Annotation foo = Utils.findAnnotation(Foo.class, Object.class);
+  @Test
+  public void findAnnotationWithClassWhereAnnotationIsNotPresent() {
+    Annotation foo = Utils.findAnnotation(Foo.class, Object.class);
 
-        assertNull(foo);
-    }
+    assertNull(foo);
+  }
 
-    @Test
-    public void isAnnotationPresentWithClassWhereAnnotationIsPresent() {
-        assertTrue(Utils.isAnnotationPresent(Foo.class, AnnotationIsPresent.class));
-    }
+  @Test
+  public void isAnnotationPresentWithClassWhereAnnotationIsPresent() {
+    assertTrue(Utils.isAnnotationPresent(Foo.class, AnnotationIsPresent.class));
+  }
 
-    @Test
-    public void isAnnotationPresentWithClassWhereAnnotationIsPresentViaMetaAnnotation() {
-        assertTrue(Utils.isAnnotationPresent(Foo.class, AnnotationIsPresentViaMetaAnnotation.class));
-    }
+  @Test
+  public void isAnnotationPresentWithClassWhereAnnotationIsPresentViaMetaAnnotation() {
+    assertTrue(Utils.isAnnotationPresent(Foo.class, AnnotationIsPresentViaMetaAnnotation.class));
+  }
 
-    @Test
-    public void isAnnotationPresentWithClassWhereAnnotationIsNotPresent() {
-        assertFalse(Utils.isAnnotationPresent(Foo.class, Object.class));
-    }
+  @Test
+  public void isAnnotationPresentWithClassWhereAnnotationIsNotPresent() {
+    assertFalse(Utils.isAnnotationPresent(Foo.class, Object.class));
+  }
 
-    private static void assertCorrectAnnotationIsFound(
-            Class<?> expectedAnnotationType, Annotation actualAnnotation) {
+  private static void assertCorrectAnnotationIsFound(
+      Class<?> expectedAnnotationType, Annotation actualAnnotation) {
 
-        assertNotNull(actualAnnotation);
-        assertEquals(expectedAnnotationType, actualAnnotation.annotationType());
-    }
+    assertNotNull(actualAnnotation);
+    assertEquals(expectedAnnotationType, actualAnnotation.annotationType());
+  }
 
-    @Retention(RetentionPolicy.RUNTIME)
-    @Target(ElementType.TYPE)
-    private @interface Foo {
-    }
+  @Retention(RetentionPolicy.RUNTIME)
+  @Target(ElementType.TYPE)
+  private @interface Foo {
 
-    @Retention(RetentionPolicy.RUNTIME)
-    @Target(ElementType.TYPE)
-    @Foo
-    private @interface MetaFoo {
-    }
+  }
 
-    @Foo
-    private static final class AnnotationIsPresent {
-    }
+  @Retention(RetentionPolicy.RUNTIME)
+  @Target(ElementType.TYPE)
+  @Foo
+  private @interface MetaFoo {
 
-    @MetaFoo
-    private static final class AnnotationIsPresentViaMetaAnnotation {
-    }
+  }
+
+  @Foo
+  private static final class AnnotationIsPresent {
+
+  }
+
+  @MetaFoo
+  private static final class AnnotationIsPresentViaMetaAnnotation {
+
+  }
 }

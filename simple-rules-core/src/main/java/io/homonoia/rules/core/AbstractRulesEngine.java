@@ -26,9 +26,9 @@ package io.homonoia.rules.core;
 
 import io.homonoia.rules.api.RuleListener;
 import io.homonoia.rules.api.RulesEngine;
+import io.homonoia.rules.api.RulesEngineHistory;
 import io.homonoia.rules.api.RulesEngineListener;
 import io.homonoia.rules.api.RulesEngineParameters;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -40,65 +40,77 @@ import java.util.List;
  */
 public abstract class AbstractRulesEngine implements RulesEngine {
 
-    RulesEngineParameters parameters;
-    List<RuleListener> ruleListeners;
-    List<RulesEngineListener> rulesEngineListeners;
+  RulesEngineParameters parameters;
+  RulesEngineHistory rulesEngineHistory;
+  List<RuleListener> ruleListeners;
+  List<RulesEngineListener> rulesEngineListeners;
 
-    AbstractRulesEngine() {
-        this(new RulesEngineParameters());
-    }
+  AbstractRulesEngine() {
+    this(new RulesEngineParameters());
+  }
 
-    AbstractRulesEngine(final RulesEngineParameters parameters) {
-        this.parameters = parameters;
-        this.ruleListeners = new ArrayList<>();
-        this.rulesEngineListeners = new ArrayList<>();
-    }
+  AbstractRulesEngine(final RulesEngineParameters parameters) {
+    this.parameters = parameters;
+    this.ruleListeners = new ArrayList<>();
+    this.rulesEngineListeners = new ArrayList<>();
+    this.rulesEngineHistory = new RulesEngineHistory();
 
-    /**
-     * Return a copy of the rules engine parameters.
-     * @return copy of the rules engine parameters
-     */
-    @Override
-    public RulesEngineParameters getParameters() {
-        return new RulesEngineParameters(
-                parameters.isSkipOnFirstAppliedRule(),
-                parameters.isSkipOnFirstFailedRule(),
-                parameters.isSkipOnFirstNonTriggeredRule(),
-                parameters.getPriorityThreshold()
-        );
-    }
+    registerRuleListener(rulesEngineHistory);
+  }
 
-    /**
-     * Return an unmodifiable list of the registered rule listeners.
-     * @return an unmodifiable list of the registered rule listeners
-     */
-    @Override
-    public List<RuleListener> getRuleListeners() {
-        return Collections.unmodifiableList(ruleListeners);
-    }
+  /**
+   * Return a copy of the rules engine parameters.
+   *
+   * @return copy of the rules engine parameters
+   */
+  @Override
+  public RulesEngineParameters getParameters() {
+    return new RulesEngineParameters(
+        parameters.isSkipOnFirstAppliedRule(),
+        parameters.isSkipOnFirstFailedRule(),
+        parameters.isSkipOnFirstNonTriggeredRule(),
+        parameters.getPriorityThreshold()
+    );
+  }
 
-    /**
-     * Return an unmodifiable list of the registered rules engine listeners
-     * @return an unmodifiable list of the registered rules engine listeners
-     */
-    @Override
-    public List<RulesEngineListener> getRulesEngineListeners() {
-        return Collections.unmodifiableList(rulesEngineListeners);
-    }
+  @Override
+  public RulesEngineHistory getHistory() {
+    return new RulesEngineHistory(rulesEngineHistory.getExecutionStatus());
+  }
 
-    public void registerRuleListener(RuleListener ruleListener) {
-        ruleListeners.add(ruleListener);
-    }
+  /**
+   * Return an unmodifiable list of the registered rule listeners.
+   *
+   * @return an unmodifiable list of the registered rule listeners
+   */
+  @Override
+  public List<RuleListener> getRuleListeners() {
+    return Collections.unmodifiableList(ruleListeners);
+  }
 
-    public void registerRuleListeners(List<RuleListener> ruleListeners) {
-        this.ruleListeners.addAll(ruleListeners);
-    }
+  /**
+   * Return an unmodifiable list of the registered rules engine listeners
+   *
+   * @return an unmodifiable list of the registered rules engine listeners
+   */
+  @Override
+  public List<RulesEngineListener> getRulesEngineListeners() {
+    return Collections.unmodifiableList(rulesEngineListeners);
+  }
 
-    public void registerRulesEngineListener(RulesEngineListener rulesEngineListener) {
-        rulesEngineListeners.add(rulesEngineListener);
-    }
+  public void registerRuleListener(RuleListener ruleListener) {
+    ruleListeners.add(ruleListener);
+  }
 
-    public void registerRulesEngineListeners(List<RulesEngineListener> rulesEngineListeners) {
-        this.rulesEngineListeners.addAll(rulesEngineListeners);
-    }
+  public void registerRuleListeners(List<RuleListener> ruleListeners) {
+    this.ruleListeners.addAll(ruleListeners);
+  }
+
+  public void registerRulesEngineListener(RulesEngineListener rulesEngineListener) {
+    rulesEngineListeners.add(rulesEngineListener);
+  }
+
+  public void registerRulesEngineListeners(List<RulesEngineListener> rulesEngineListeners) {
+    this.rulesEngineListeners.addAll(rulesEngineListeners);
+  }
 }

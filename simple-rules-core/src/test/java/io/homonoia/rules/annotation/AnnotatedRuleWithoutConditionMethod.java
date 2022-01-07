@@ -27,19 +27,19 @@ package io.homonoia.rules.annotation;
 @Rule
 public class AnnotatedRuleWithoutConditionMethod {
 
-    private boolean executed;
+  private boolean executed;
 
-    public boolean when() {
-        return true;
-    }
+  public boolean when() {
+    return true;
+  }
 
-    @Action
-    public void then() {
-        executed = true;
-    }
+  @Action
+  public void then() {
+    executed = true;
+  }
 
-    public boolean isExecuted() {
-        return executed;
-    }
+  public boolean isExecuted() {
+    return executed;
+  }
 
 }

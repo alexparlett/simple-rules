@@ -40,28 +40,32 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface Rule {
 
-    /**
-     * The rule name which must be unique within a rules registry.
-     * @return The rule name
-     */
-    String name() default io.homonoia.rules.api.Rule.DEFAULT_NAME;
+  /**
+   * The rule name which must be unique within a rules registry.
+   *
+   * @return The rule name
+   */
+  String name() default io.homonoia.rules.api.Rule.DEFAULT_NAME;
 
-    /**
-     * The rule description.
-     * @return The rule description
-     */
-    String description() default  io.homonoia.rules.api.Rule.DEFAULT_DESCRIPTION;
+  /**
+   * The rule description.
+   *
+   * @return The rule description
+   */
+  String description() default io.homonoia.rules.api.Rule.DEFAULT_DESCRIPTION;
 
-    /**
-     * The rule priority.
-     * @return The rule priority
-     */
-    int priority() default io.homonoia.rules.api.Rule.DEFAULT_PRIORITY;
+  /**
+   * The rule priority.
+   *
+   * @return The rule priority
+   */
+  int priority() default io.homonoia.rules.api.Rule.DEFAULT_PRIORITY;
 
-    /**
-     * The rule loop status.
-     * @return The rule loop status
-     */
-    boolean loop() default io.homonoia.rules.api.Rule.DEFAULT_LOOP;
+  /**
+   * The rule loop status.
+   *
+   * @return The rule loop status
+   */
+  boolean loop() default io.homonoia.rules.api.Rule.DEFAULT_LOOP;
 
 }

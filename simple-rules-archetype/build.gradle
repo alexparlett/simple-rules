@@ -13,7 +13,7 @@ description = 'Simple Rules Quick Start Archetype'
 
 license {
     header = rootProject.file('license_header.txt')
-    include '**/*.java'include '**/*.java'
+    include '**/*.java' include '**/*.java'
     ext {
         year = LocalDate.now().getYear()
     }

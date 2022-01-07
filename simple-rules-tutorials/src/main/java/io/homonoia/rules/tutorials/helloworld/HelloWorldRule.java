@@ -31,14 +31,14 @@ import io.homonoia.rules.annotation.Rule;
 @Rule(name = "Hello World rule", description = "Always say hello world")
 public class HelloWorldRule {
 
-    @Condition
-    public boolean when() {
-        return true;
-    }
+  @Condition
+  public boolean when() {
+    return true;
+  }
 
-    @Action
-    public void then() {
-        System.out.println("hello world");
-    }
+  @Action
+  public void then() {
+    System.out.println("hello world");
+  }
 
 }

@@ -25,7 +25,6 @@
 package io.homonoia.rules.support.reader;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +32,7 @@ import java.util.Map;
 
 /**
  * Rule definition reader based on <a href="https://github.com/FasterXML/jackson">Jackson</a>.
- *
+ * <p>
  * This reader expects an array of rule definitions as input even for a single rule. For example:
  *
  * <pre>
@@ -45,32 +44,32 @@ import java.util.Map;
 @SuppressWarnings("unchecked")
 public class JsonRuleDefinitionReader extends AbstractRuleDefinitionReader {
 
-    private final ObjectMapper objectMapper;
+  private final ObjectMapper objectMapper;
 
-    /**
-     * Create a new {@link JsonRuleDefinitionReader}.
-     */
-    public JsonRuleDefinitionReader() {
-        this(new ObjectMapper());
-    }
+  /**
+   * Create a new {@link JsonRuleDefinitionReader}.
+   */
+  public JsonRuleDefinitionReader() {
+    this(new ObjectMapper());
+  }
 
-    /**
-     * Create a new {@link JsonRuleDefinitionReader}.
-     *
-     * @param objectMapper to use to read rule definitions
-     */
-    public JsonRuleDefinitionReader(ObjectMapper objectMapper) {
-        this.objectMapper = objectMapper;
-    }
+  /**
+   * Create a new {@link JsonRuleDefinitionReader}.
+   *
+   * @param objectMapper to use to read rule definitions
+   */
+  public JsonRuleDefinitionReader(ObjectMapper objectMapper) {
+    this.objectMapper = objectMapper;
+  }
 
-    @Override
-    protected Iterable<Map<String, Object>> loadRules(Reader reader) throws Exception {
-        List<Map<String, Object>> rulesList = new ArrayList<>();
-        Object[] rules = objectMapper.readValue(reader, Object[].class);
-        for (Object rule : rules) {
-            rulesList.add((Map<String, Object>) rule);
-        }
-        return rulesList;
+  @Override
+  protected Iterable<Map<String, Object>> loadRules(Reader reader) throws Exception {
+    List<Map<String, Object>> rulesList = new ArrayList<>();
+    Object[] rules = objectMapper.readValue(reader, Object[].class);
+    for (Object rule : rules) {
+      rulesList.add((Map<String, Object>) rule);
     }
+    return rulesList;
+  }
 
 }

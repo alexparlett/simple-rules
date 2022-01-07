@@ -24,147 +24,150 @@
 
 package io.homonoia.rules.api;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import io.homonoia.rules.annotation.Action;
 import io.homonoia.rules.annotation.Condition;
 import io.homonoia.rules.core.BasicRule;
-import org.junit.Test;
-
 import java.util.HashSet;
 import java.util.Set;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.Test;
 
 public class RulesTest {
 
-    private Rules rules = new Rules();
+  private Rules rules = new Rules();
 
-    @Test
-    public void register() {
-        rules.register(new DummyRule());
+  @Test
+  public void register() {
+    rules.register(new DummyRule());
 
-        assertThat(rules).hasSize(1);
+    assertThat(rules).hasSize(1);
+  }
+
+  @Test
+  public void rulesMustHaveUniqueName() {
+    Rule r1 = new BasicRule("rule");
+    Rule r2 = new BasicRule("rule");
+    Set<Rule> ruleSet = new HashSet<>();
+    ruleSet.add(r1);
+    ruleSet.add(r2);
+
+    rules = new Rules(ruleSet);
+
+    assertThat(rules).hasSize(1);
+  }
+
+  @Test
+  public void unregister() {
+    DummyRule rule = new DummyRule();
+    rules.register(rule);
+    rules.unregister(rule);
+
+    assertThat(rules).isEmpty();
+  }
+
+  @Test
+  public void unregisterByName() {
+    Rule r1 = new BasicRule("rule1");
+    Rule r2 = new BasicRule("rule2");
+    Set<Rule> ruleSet = new HashSet<>();
+    ruleSet.add(r1);
+    ruleSet.add(r2);
+
+    rules = new Rules(ruleSet);
+    rules.unregister("rule2");
+
+    assertThat(rules).hasSize(1).containsExactly(r1);
+  }
+
+  @Test
+  public void unregisterByNameNonExistingRule() {
+    Rule r1 = new BasicRule("rule1");
+    Set<Rule> ruleSet = new HashSet<>();
+    ruleSet.add(r1);
+
+    rules = new Rules(ruleSet);
+    rules.unregister("rule2");
+
+    assertThat(rules).hasSize(1).containsExactly(r1);
+  }
+
+  @Test
+  public void isEmpty() {
+    assertThat(rules.isEmpty()).isTrue();
+  }
+
+  @Test
+  public void clear() {
+    rules.register(new DummyRule());
+    rules.clear();
+
+    assertThat(rules).isEmpty();
+  }
+
+  @Test
+  public void sort() {
+    Rule r1 = new BasicRule("rule", "", 1);
+    Rule r2 = new BasicRule("rule", "", Integer.MAX_VALUE);
+    DummyRule r3 = new DummyRule();
+
+    rules.register(r3);
+    rules.register(r1);
+    rules.register(r2);
+
+    assertThat(rules).startsWith(r1).endsWith(r2);
+  }
+
+  @Test
+  public void size() {
+    assertThat(rules.size()).isEqualTo(0);
+
+    rules.register(new DummyRule());
+    assertThat(rules.size()).isEqualTo(1);
+
+    rules.unregister(new DummyRule());
+    assertThat(rules.size()).isEqualTo(0);
+  }
+
+  @Test
+  public void register_multiple() {
+    rules.register(new BasicRule("ruleA"), new BasicRule("ruleB"));
+    assertThat(rules.size()).isEqualTo(2);
+  }
+
+  @Test
+  public void unregister_noneLeft() {
+    rules.register(new BasicRule("ruleA"), new BasicRule("ruleB"));
+    assertThat(rules.size()).isEqualTo(2);
+
+    rules.unregister(new BasicRule("ruleA"), new BasicRule("ruleB"));
+    assertThat(rules.size()).isEqualTo(0);
+  }
+
+  @Test
+  public void unregister_oneLeft() {
+    rules.register(new BasicRule("ruleA"), new BasicRule("ruleB"));
+    assertThat(rules.size()).isEqualTo(2);
+
+    rules.unregister(new BasicRule("ruleA"));
+    assertThat(rules.size()).isEqualTo(1);
+  }
+
+  @Test(expected = NullPointerException.class)
+  public void whenRegisterNullRule_thenShouldThrowNullPointerException() {
+    rules.register((Object) null);
+  }
+
+  @io.homonoia.rules.annotation.Rule
+  static class DummyRule {
+
+    @Condition
+    public boolean when() {
+      return true;
     }
 
-    @Test
-    public void rulesMustHaveUniqueName() {
-        Rule r1 = new BasicRule("rule");
-        Rule r2 = new BasicRule("rule");
-        Set<Rule> ruleSet = new HashSet<>();
-        ruleSet.add(r1);
-        ruleSet.add(r2);
-
-        rules = new Rules(ruleSet);
-
-        assertThat(rules).hasSize(1);
+    @Action
+    public void then() {
     }
-
-    @Test
-    public void unregister() {
-        DummyRule rule = new DummyRule();
-        rules.register(rule);
-        rules.unregister(rule);
-
-        assertThat(rules).isEmpty();
-    }
-
-    @Test
-    public void unregisterByName() {
-        Rule r1 = new BasicRule("rule1");
-        Rule r2 = new BasicRule("rule2");
-        Set<Rule> ruleSet = new HashSet<>();
-        ruleSet.add(r1);
-        ruleSet.add(r2);
-
-        rules = new Rules(ruleSet);
-        rules.unregister("rule2");
-
-        assertThat(rules).hasSize(1).containsExactly(r1);
-    }
-
-    @Test
-    public void unregisterByNameNonExistingRule() {
-        Rule r1 = new BasicRule("rule1");
-        Set<Rule> ruleSet = new HashSet<>();
-        ruleSet.add(r1);
-
-        rules = new Rules(ruleSet);
-        rules.unregister("rule2");
-
-        assertThat(rules).hasSize(1).containsExactly(r1);
-    }
-
-    @Test
-    public void isEmpty() {
-        assertThat(rules.isEmpty()).isTrue();
-    }
-
-    @Test
-    public void clear() {
-        rules.register(new DummyRule());
-        rules.clear();
-
-        assertThat(rules).isEmpty();
-    }
-
-    @Test
-    public void sort() {
-        Rule r1 = new BasicRule("rule", "", 1);
-        Rule r2 = new BasicRule("rule", "", Integer.MAX_VALUE);
-        DummyRule r3 = new DummyRule();
-
-        rules.register(r3);
-        rules.register(r1);
-        rules.register(r2);
-
-        assertThat(rules).startsWith(r1).endsWith(r2);
-    }
-
-    @Test
-    public void size() {
-        assertThat(rules.size()).isEqualTo(0);
-
-        rules.register(new DummyRule());
-        assertThat(rules.size()).isEqualTo(1);
-
-        rules.unregister(new DummyRule());
-        assertThat(rules.size()).isEqualTo(0);
-    }
-
-    @Test
-    public void register_multiple() {
-        rules.register(new BasicRule("ruleA"), new BasicRule("ruleB"));
-        assertThat(rules.size()).isEqualTo(2);
-    }
-
-    @Test
-    public void unregister_noneLeft() {
-        rules.register(new BasicRule("ruleA"), new BasicRule("ruleB"));
-        assertThat(rules.size()).isEqualTo(2);
-
-        rules.unregister(new BasicRule("ruleA"), new BasicRule("ruleB"));
-        assertThat(rules.size()).isEqualTo(0);
-    }
-
-    @Test
-    public void unregister_oneLeft() {
-        rules.register(new BasicRule("ruleA"), new BasicRule("ruleB"));
-        assertThat(rules.size()).isEqualTo(2);
-
-        rules.unregister(new BasicRule("ruleA"));
-        assertThat(rules.size()).isEqualTo(1);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void whenRegisterNullRule_thenShouldThrowNullPointerException() {
-        rules.register((Object) null);
-    }
-
-    @io.homonoia.rules.annotation.Rule
-	static class DummyRule {
-        @Condition
-        public boolean when() { return true; }
-
-        @Action
-        public void then() { }
-    }
+  }
 }

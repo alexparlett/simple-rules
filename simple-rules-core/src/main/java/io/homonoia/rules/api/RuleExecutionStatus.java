@@ -22,25 +22,13 @@
  * THE SOFTWARE.
  */
 
-package io.homonoia.rules.annotation;
+package io.homonoia.rules.api;
 
-@Rule
-public class AnnotatedRuleWithConditionMethodHavingOneArgumentNotOfTypeFacts {
+public enum RuleExecutionStatus {
 
-  private boolean executed;
-
-  @Condition
-  public boolean when(int i) {
-    return i == 0;
-  }
-
-  @Action
-  public void then() {
-    executed = true;
-  }
-
-  public boolean isExecuted() {
-    return executed;
-  }
-
+    NOT_EVALUATED,
+    SKIPPED,
+    EXECUTED,
+    EXECUTION_FAILURE,
+    EVALUATION_FAILURE
 }

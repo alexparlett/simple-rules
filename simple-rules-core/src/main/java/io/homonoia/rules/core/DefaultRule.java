@@ -27,34 +27,34 @@ package io.homonoia.rules.core;
 import io.homonoia.rules.api.Action;
 import io.homonoia.rules.api.Condition;
 import io.homonoia.rules.api.Facts;
-
 import java.util.List;
 
 class DefaultRule extends BasicRule {
 
-    private final Condition condition;
-    private final List<Action> actions;
+  private final Condition condition;
+  private final List<Action> actions;
 
-    DefaultRule(String name, String description, int priority, boolean loop, Condition condition, List<Action> actions) {
-        super(name, description, priority, loop);
-        this.condition = condition;
-        this.actions = actions;
-    }
+  DefaultRule(String name, String description, int priority, boolean loop, Condition condition,
+      List<Action> actions) {
+    super(name, description, priority, loop);
+    this.condition = condition;
+    this.actions = actions;
+  }
 
-    @Override
-    public boolean evaluate(Facts facts) {
-        if (!getLoop() && executed.get()) {
-            return false;
-        }
-        return condition.evaluate(facts);
+  @Override
+  public boolean evaluate(Facts facts) {
+    if (!getLoop() && executed.get()) {
+      return false;
     }
+    return condition.evaluate(facts);
+  }
 
-    @Override
-    public void execute(Facts facts) throws Exception {
-        executed.getAndSet(true);
-        for (Action action : actions) {
-            action.execute(facts);
-        }
+  @Override
+  public void execute(Facts facts) throws Exception {
+    executed.getAndSet(true);
+    for (Action action : actions) {
+      action.execute(facts);
     }
+  }
 
 }

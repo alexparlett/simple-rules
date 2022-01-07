@@ -27,15 +27,14 @@ package io.homonoia.rules.core;
 import io.homonoia.rules.annotation.Action;
 import io.homonoia.rules.annotation.Condition;
 import io.homonoia.rules.annotation.Fact;
-import io.homonoia.rules.annotation.Priority;
 import io.homonoia.rules.annotation.Rule;
-import io.homonoia.rules.api.Facts;
-import io.homonoia.rules.api.Rules;
-import io.homonoia.rules.api.RulesEngine;
-import io.homonoia.rules.api.RulesEngineListener;
+import io.homonoia.rules.annotation.*;
+import io.homonoia.rules.api.*;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.*;
 
 public class InferenceRulesEngineTest {
 
@@ -79,6 +78,40 @@ public class InferenceRulesEngineTest {
         // Then
         assertThat(dummyRule.isExecuted()).isTrue();
         assertThat(anotherDummyRule.isExecuted()).isFalse();
+    }
+
+    @Test
+    public void testCandidateLoop() throws Exception {
+        // Given
+        Facts facts = new Facts();
+
+        BasicRule dummyRule = Mockito.spy(new BasicRule("Dummy Rule", "Dummy Rule", 1, true));
+        BasicRule anotherDummyRule = Mockito.spy(new BasicRule("Another Dummy Rule", "Another Dummy Rule", 2, true));
+
+        when(dummyRule.evaluate(any()))
+                .thenReturn(true, false);
+
+        when(anotherDummyRule.evaluate(any()))
+                .thenReturn(true, true, false);
+
+        Rules rules = new Rules(dummyRule, anotherDummyRule);
+        RulesEngine rulesEngine = new InferenceRulesEngine();
+
+        // When
+        rulesEngine.fire(rules, facts);
+
+        // Then
+        verify(dummyRule, times(1)).execute(any());
+        verify(anotherDummyRule, times(2)).execute(any());
+
+        assertThat(rulesEngine.getHistory()).isNotNull();
+        assertThat(rulesEngine.getHistory().getExecutionStatus()).isNotNull();
+        assertThat(rulesEngine.getHistory().getExecutionStatus().size()).isEqualTo(6);
+        assertThat(rulesEngine.getHistory().getExecutionStatus().asMap())
+                .hasEntrySatisfying(dummyRule, executionStatuses -> assertThat(executionStatuses).containsExactly(RuleExecutionStatus.EXECUTED, RuleExecutionStatus.SKIPPED, RuleExecutionStatus.SKIPPED));
+        assertThat(rulesEngine.getHistory().getExecutionStatus().asMap())
+                .hasEntrySatisfying(anotherDummyRule, executionStatuses -> assertThat(executionStatuses).containsExactly(RuleExecutionStatus.EXECUTED, RuleExecutionStatus.EXECUTED, RuleExecutionStatus.SKIPPED));
+
     }
 
     @Test
@@ -147,7 +180,7 @@ public class InferenceRulesEngineTest {
     }
 
     @Rule
-	static class DummyRule {
+    static class DummyRule {
 
         private boolean isExecuted;
         private long timestamp;
@@ -179,7 +212,7 @@ public class InferenceRulesEngineTest {
     }
 
     @Rule
-	static class AnotherDummyRule {
+    static class AnotherDummyRule {
 
         private boolean isExecuted;
         private long timestamp;

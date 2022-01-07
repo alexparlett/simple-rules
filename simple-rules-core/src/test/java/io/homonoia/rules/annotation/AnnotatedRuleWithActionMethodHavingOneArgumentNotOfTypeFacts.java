@@ -27,22 +27,22 @@ package io.homonoia.rules.annotation;
 @Rule
 public class AnnotatedRuleWithActionMethodHavingOneArgumentNotOfTypeFacts {
 
-    private boolean executed;
+  private boolean executed;
 
-    @Condition
-    public boolean when() {
-        return true;
-    }
+  @Condition
+  public boolean when() {
+    return true;
+  }
 
-    @Action
-    public void then(int i) {
-        if (i == 1) {
-            executed = true;
-        }
+  @Action
+  public void then(int i) {
+    if (i == 1) {
+      executed = true;
     }
+  }
 
-    public boolean isExecuted() {
-        return executed;
-    }
+  public boolean isExecuted() {
+    return executed;
+  }
 
 }

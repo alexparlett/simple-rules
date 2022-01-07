@@ -26,6 +26,11 @@ package io.homonoia.rules.jexl;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import io.homonoia.rules.api.Rule;
+import io.homonoia.rules.api.Rules;
+import io.homonoia.rules.support.composite.UnitRuleGroup;
+import io.homonoia.rules.support.reader.JsonRuleDefinitionReader;
+import io.homonoia.rules.support.reader.YamlRuleDefinitionReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.Reader;
@@ -37,15 +42,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-
-import io.homonoia.rules.support.composite.UnitRuleGroup;
-import io.homonoia.rules.support.reader.JsonRuleDefinitionReader;
-import io.homonoia.rules.support.reader.YamlRuleDefinitionReader;
 import org.apache.commons.jexl3.JexlBuilder;
 import org.apache.commons.jexl3.JexlEngine;
 import org.assertj.core.api.Assertions;
-import io.homonoia.rules.api.Rule;
-import io.homonoia.rules.api.Rules;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -59,144 +58,151 @@ import org.junit.runners.Parameterized.Parameters;
 @RunWith(Parameterized.class)
 public class JexlRuleFactoryTest {
 
-    @Parameters
-    public static Collection<Object[]> params() {
-        Map<String, Object> namespaces = new HashMap<>();
-        namespaces.put("sout", System.out);
-        JexlEngine jexlEngine = new JexlBuilder()
-                .namespaces(namespaces)
-                .strict(false)
-                .create();
-        return Arrays.asList(new Object[][] {
-                { new JexlRuleFactory(new YamlRuleDefinitionReader(), jexlEngine), "yml" },
-                { new JexlRuleFactory(new JsonRuleDefinitionReader(), jexlEngine), "json" },
-        });
-    }
+  @Parameters
+  public static Collection<Object[]> params() {
+    Map<String, Object> namespaces = new HashMap<>();
+    namespaces.put("sout", System.out);
+    JexlEngine jexlEngine = new JexlBuilder()
+        .namespaces(namespaces)
+        .strict(false)
+        .create();
+    return Arrays.asList(new Object[][]{
+        {new JexlRuleFactory(new YamlRuleDefinitionReader(), jexlEngine), "yml"},
+        {new JexlRuleFactory(new JsonRuleDefinitionReader(), jexlEngine), "json"},
+    });
+  }
 
-    @Parameter(0)
-    public JexlRuleFactory factory;
+  @Parameter(0)
+  public JexlRuleFactory factory;
 
-    @Parameter(1)
-    public String ext;
+  @Parameter(1)
+  public String ext;
 
-    @Test
-    public void testRulesCreation() throws Exception {
-        // given
-        File rulesDescriptor = new File("src/test/resources/rules." + ext);
+  @Test
+  public void testRulesCreation() throws Exception {
+    // given
+    File rulesDescriptor = new File("src/test/resources/rules." + ext);
 
-        // when
-        Rules rules = factory.createRules(new FileReader(rulesDescriptor));
+    // when
+    Rules rules = factory.createRules(new FileReader(rulesDescriptor));
 
-        // then
-        assertThat(rules).hasSize(2);
-        Iterator<Rule> iterator = rules.iterator();
+    // then
+    assertThat(rules).hasSize(2);
+    Iterator<Rule> iterator = rules.iterator();
 
-        Rule rule = iterator.next();
-        assertThat(rule).isNotNull();
-        assertThat(rule.getName()).isEqualTo("adult rule");
-        assertThat(rule.getDescription()).isEqualTo("when age is greater than 18, then mark as adult");
-        assertThat(rule.getPriority()).isEqualTo(1);
+    Rule rule = iterator.next();
+    assertThat(rule).isNotNull();
+    assertThat(rule.getName()).isEqualTo("adult rule");
+    assertThat(rule.getDescription()).isEqualTo("when age is greater than 18, then mark as adult");
+    assertThat(rule.getPriority()).isEqualTo(1);
 
-        rule = iterator.next();
-        assertThat(rule).isNotNull();
-        assertThat(rule.getName()).isEqualTo("weather rule");
-        assertThat(rule.getDescription()).isEqualTo("when it rains, then take an umbrella");
-        assertThat(rule.getPriority()).isEqualTo(2);
-    }
+    rule = iterator.next();
+    assertThat(rule).isNotNull();
+    assertThat(rule.getName()).isEqualTo("weather rule");
+    assertThat(rule.getDescription()).isEqualTo("when it rains, then take an umbrella");
+    assertThat(rule.getPriority()).isEqualTo(2);
+  }
 
-    @Test
-    public void testRuleCreationFromFileReader() throws Exception {
-        // given
-        Reader adultRuleDescriptorAsReader = new FileReader("src/test/resources/adult-rule." + ext);
+  @Test
+  public void testRuleCreationFromFileReader() throws Exception {
+    // given
+    Reader adultRuleDescriptorAsReader = new FileReader("src/test/resources/adult-rule." + ext);
 
-        // when
-        Rule adultRule = factory.createRule(adultRuleDescriptorAsReader);
+    // when
+    Rule adultRule = factory.createRule(adultRuleDescriptorAsReader);
 
-        // then
-        assertThat(adultRule.getName()).isEqualTo("adult rule");
-        assertThat(adultRule.getDescription()).isEqualTo("when age is greater than 18, then mark as adult");
-        assertThat(adultRule.getPriority()).isEqualTo(1);
-    }
+    // then
+    assertThat(adultRule.getName()).isEqualTo("adult rule");
+    assertThat(adultRule.getDescription())
+        .isEqualTo("when age is greater than 18, then mark as adult");
+    assertThat(adultRule.getPriority()).isEqualTo(1);
+  }
 
-    @Test
-    public void testRuleCreationFromStringReader() throws Exception {
-        // given
-        Reader adultRuleDescriptorAsReader = new StringReader(new String(Files.readAllBytes(Paths.get("src/test/resources/adult-rule." + ext))));
+  @Test
+  public void testRuleCreationFromStringReader() throws Exception {
+    // given
+    Reader adultRuleDescriptorAsReader = new StringReader(
+        new String(Files.readAllBytes(Paths.get("src/test/resources/adult-rule." + ext))));
 
-        // when
-        Rule adultRule = factory.createRule(adultRuleDescriptorAsReader);
+    // when
+    Rule adultRule = factory.createRule(adultRuleDescriptorAsReader);
 
-        // then
-        assertThat(adultRule.getName()).isEqualTo("adult rule");
-        assertThat(adultRule.getDescription()).isEqualTo("when age is greater than 18, then mark as adult");
-        assertThat(adultRule.getPriority()).isEqualTo(1);
-    }
+    // then
+    assertThat(adultRule.getName()).isEqualTo("adult rule");
+    assertThat(adultRule.getDescription())
+        .isEqualTo("when age is greater than 18, then mark as adult");
+    assertThat(adultRule.getPriority()).isEqualTo(1);
+  }
 
-    @Test
-    public void testRuleCreationFromFileReader_withCompositeRules() throws Exception {
-        // given
-        File rulesDescriptor = new File("src/test/resources/composite-rules." + ext);
+  @Test
+  public void testRuleCreationFromFileReader_withCompositeRules() throws Exception {
+    // given
+    File rulesDescriptor = new File("src/test/resources/composite-rules." + ext);
 
-        // when
-        Rules rules = factory.createRules(new FileReader(rulesDescriptor));
+    // when
+    Rules rules = factory.createRules(new FileReader(rulesDescriptor));
 
-        // then
-        assertThat(rules).hasSize(2);
-        Iterator<Rule> iterator = rules.iterator();
+    // then
+    assertThat(rules).hasSize(2);
+    Iterator<Rule> iterator = rules.iterator();
 
-        Rule rule = iterator.next();
-        assertThat(rule).isNotNull();
-        assertThat(rule.getName()).isEqualTo("Movie id rule");
-        assertThat(rule.getDescription()).isEqualTo("description");
-        assertThat(rule.getPriority()).isEqualTo(1);
-        assertThat(rule).isInstanceOf(UnitRuleGroup.class);
+    Rule rule = iterator.next();
+    assertThat(rule).isNotNull();
+    assertThat(rule.getName()).isEqualTo("Movie id rule");
+    assertThat(rule.getDescription()).isEqualTo("description");
+    assertThat(rule.getPriority()).isEqualTo(1);
+    assertThat(rule).isInstanceOf(UnitRuleGroup.class);
 
-        rule = iterator.next();
-        assertThat(rule).isNotNull();
-        assertThat(rule.getName()).isEqualTo("weather rule");
-        assertThat(rule.getDescription()).isEqualTo("when it rains, then take an umbrella");
-        assertThat(rule.getPriority()).isEqualTo(1);
-    }
+    rule = iterator.next();
+    assertThat(rule).isNotNull();
+    assertThat(rule.getName()).isEqualTo("weather rule");
+    assertThat(rule.getDescription()).isEqualTo("when it rains, then take an umbrella");
+    assertThat(rule.getPriority()).isEqualTo(1);
+  }
 
-    @Test
-    public void testRuleCreationFromFileReader_withInvalidCompositeRuleType() {
-        // given
-        File rulesDescriptor = new File("src/test/resources/composite-rule-invalid-composite-rule-type." + ext);
+  @Test
+  public void testRuleCreationFromFileReader_withInvalidCompositeRuleType() {
+    // given
+    File rulesDescriptor = new File(
+        "src/test/resources/composite-rule-invalid-composite-rule-type." + ext);
 
-        // when
-        Assertions.assertThatThrownBy(() -> factory.createRule(new FileReader(rulesDescriptor)))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("Invalid composite rule type, must be one of [UnitRuleGroup, ConditionalRuleGroup, ActivationRuleGroup]");
+    // when
+    Assertions.assertThatThrownBy(() -> factory.createRule(new FileReader(rulesDescriptor)))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessage(
+            "Invalid composite rule type, must be one of [UnitRuleGroup, ConditionalRuleGroup, ActivationRuleGroup]");
 
-        // then
-        // expected exception
-    }
+    // then
+    // expected exception
+  }
 
-    @Test
-    public void testRuleCreationFromFileReader_withEmptyComposingRules() {
-        // given
-        File rulesDescriptor = new File("src/test/resources/composite-rule-invalid-empty-composing-rules." + ext);
+  @Test
+  public void testRuleCreationFromFileReader_withEmptyComposingRules() {
+    // given
+    File rulesDescriptor = new File(
+        "src/test/resources/composite-rule-invalid-empty-composing-rules." + ext);
 
-        // when
-        Assertions.assertThatThrownBy(() -> factory.createRule(new FileReader(rulesDescriptor)))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("Composite rules must have composing rules specified");
+    // when
+    Assertions.assertThatThrownBy(() -> factory.createRule(new FileReader(rulesDescriptor)))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessage("Composite rules must have composing rules specified");
 
-        // then
-        // expected exception
-    }
+    // then
+    // expected exception
+  }
 
-    @Test
-    public void testRuleCreationFromFileReader_withNonCompositeRuleDeclaresComposingRules() {
-        // given
-        File rulesDescriptor = new File("src/test/resources/non-composite-rule-with-composing-rules." + ext);
+  @Test
+  public void testRuleCreationFromFileReader_withNonCompositeRuleDeclaresComposingRules() {
+    // given
+    File rulesDescriptor = new File(
+        "src/test/resources/non-composite-rule-with-composing-rules." + ext);
 
-        // when
-        Assertions.assertThatThrownBy(() -> factory.createRule(new FileReader(rulesDescriptor)))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("Non-composite rules cannot have composing rules");
+    // when
+    Assertions.assertThatThrownBy(() -> factory.createRule(new FileReader(rulesDescriptor)))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessage("Non-composite rules cannot have composing rules");
 
-        // then
-        // expected exception
-    }
+    // then
+    // expected exception
+  }
 }
