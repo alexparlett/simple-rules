@@ -1,38 +1,33 @@
 ***
 
 <div align="center">
-    <b><em>Easy Rules</em></b><br>
+    <b><em>Simple Rules</em></b><br>
     The simple, stupid rules engine for Java&trade;
 </div>
 
 <div align="center">
 
 [![MIT license](http://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat)](http://opensource.org/licenses/MIT)
-[![Build Status](https://github.com/j-easy/easy-rules/workflows/Java%20CI/badge.svg)](https://github.com/j-easy/easy-rules/actions)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.jeasy/easy-rules-core/badge.svg?style=flat)](http://search.maven.org/#artifactdetails|org.jeasy|easy-rules-core|4.1.0|)
-[![Javadoc](https://www.javadoc.io/badge/org.jeasy/easy-rules-core.svg)](http://www.javadoc.io/doc/org.jeasy/easy-rules-core)
-[![Project status](https://img.shields.io/badge/Project%20status-Maintenance-orange.svg)](https://img.shields.io/badge/Project%20status-Maintenance-orange.svg)
+[![Build Status](https://github.com/alexparlett/simple-rules/workflows/Java%20CI/badge.svg)](https://github.com/alexparlett/simple-rules/actions)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.homonoia/simple-rules-core/badge.svg?style=flat)](http://search.maven.org/#artifactdetails|org.homonoia|simple-rules-core|4.1.0|)
+[![Javadoc](https://www.javadoc.io/badge/io.homonoia/simple-rules-core.svg)](http://www.javadoc.io/doc/io.homonoia/simple-rules-core)
+[![Project status](https://img.shields.io/badge/Project%20status-Active-brightgreen)](https://img.shields.io/badge/Project%20status-Active-brightgreen)
 
 </div>
 
 ***
 
-## Project status
-
-As of December 2020, Easy Rules is in maintenance mode. This means only bug fixes will be addressed from now on.
-Version 4.1.x is the only supported version. Please consider upgrading to this version at your earliest convenience.
-
 ## Latest news
 
-* 06/12/2020: Version 4.1 is out with a new module to support [Apache JEXL](https://commons.apache.org/proper/commons-jexl/) as an additional supported expression language! You can find all details about other changes in the [release notes](https://github.com/j-easy/easy-rules/releases).
+* 06/12/2020: Version 4.1 is out with a new module to support [Apache JEXL](https://commons.apache.org/proper/commons-jexl/) as an additional supported expression language! You can find all details about other changes in the [release notes](https://github.com/alexparlett/simple-rules/releases).
 
-## What is Easy Rules?
+## What is Simple Rules?
 
-Easy Rules is a Java rules engine inspired by an article called *"[Should I use a Rules Engine?](http://martinfowler.com/bliki/RulesEngine.html)"* of [Martin Fowler](http://martinfowler.com/) in which Martin says:
+Simple Rules is a Java rules engine inspired by an article called *"[Should I use a Rules Engine?](http://martinfowler.com/bliki/RulesEngine.html)"* of [Martin Fowler](http://martinfowler.com/) in which Martin says:
 
 > You can build a simple rules engine yourself. All you need is to create a bunch of objects with conditions and actions, store them in a collection, and run through them to evaluate the conditions and execute the actions.
 
-This is exactly what Easy Rules does, it provides the `Rule` abstraction to create rules with conditions and actions, and the `RulesEngine` API that runs through a set of rules to evaluate conditions and execute actions.
+This is exactly what Simple Rules does, it provides the `Rule` abstraction to create rules with conditions and actions, and the `RulesEngine` API that runs through a set of rules to evaluate conditions and execute actions.
 
 ## Core features
 
@@ -123,67 +118,16 @@ public class Test {
 }
 ```
 
-This is the hello world of Easy Rules. You can find other examples like the [Shop](https://github.com/j-easy/easy-rules/wiki/shop), [Airco](https://github.com/j-easy/easy-rules/wiki/air-conditioning) or [WebApp](https://github.com/j-easy/easy-rules/wiki/web-app) tutorials in the wiki.
+This is the hello world of Simple Rules. You can find other examples like the [Shop](https://github.com/alexparlett/simple-rules/wiki/shop), [Airco](https://github.com/alexparlett/simple-rules/wiki/air-conditioning) or [WebApp](https://github.com/alexparlett/simple-rules/wiki/web-app) tutorials in the wiki.
+
+This is built off the fantastic work of [Easy Rules](https://github.com/j-easy/easy-rules) by Mahmoud Ben Hassine and forked to define differences in the api and bring out of maintenance mode.
+ 
 
 ## Contribution
 
 You are welcome to contribute to the project with pull requests on GitHub.
-Please note that Easy Rules is in [maintenance mode](https://github.com/j-easy/easy-rules#project-status),
-which means only pull requests for bug fixes will be considered.
 
-If you believe you found a bug or have any question, please use the [issue tracker](https://github.com/j-easy/easy-rules/issues).
-
-## Awesome contributors
-
-* [Alexey1Gavrilov](https://github.com/Alexey1Gavrilov)
-* [andersonkyle](https://github.com/andersonkyle)
-* [aston2016](https://github.com/aston2016)
-* [avakimov](https://github.com/avakimov)
-* [beccagaspard](https://github.com/beccagaspard)
-* [bpoussin](https://github.com/bpoussin)
-* [cgonul](https://github.com/cgonul)
-* [cemo](https://github.com/cemo)
-* [dagframstad](https://github.com/dagframstad)
-* [danrivcap](https://github.com/danrivcap)
-* [Desislav-Petrov](https://github.com/Desislav-Petrov)
-* [drem-darios](https://github.com/drem-darios)
-* [gs-spadmanabhan](https://github.com/gs-spadmanabhan)
-* [JurMarky](https://github.com/JurMarky)
-* [jordanjennings](https://github.com/jordanjennings)
-* [kayeight](https://github.com/kayeight)
-* [khandelwalankit](https://github.com/khandelwalankit)
-* [lranasingha](https://github.com/lranasingha)
-* [laurikimmel](https://github.com/laurikimmel)
-* [mrcritical](https://github.com/mrcritical)
-* [paulbrejla](https://github.com/paulbrejla)
-* [richdouglasevans](https://github.com/richdouglasevans)
-* [ruanjiehui](https://github.com/ruanjiehui)
-* [spearway](https://github.com/spearway)
-* [stefanbirkner](https://github.com/stefanbirkner)
-* [toudidel](https://github.com/toudidel)
-* [vinoct6](https://github.com/vinoct6)
-* [wg1j](https://github.com/wg1j)
-* [will-gilbert](https://github.com/will-gilbert)
-* [WayneCui](https://github.com/WayneCui)
-* [sanmibuh](https://github.com/sanmibuh)
-* [shivmitra](https://github.com/shivmitra)
-* [zhhaojie](https://github.com/zhhaojie)
-
-Thank you all for your contributions!
-
-## Easy Rules in other languages
-
-* [EasyRulesGo](https://github.com/CrowdStrike/easyrulesgo) : A port of EasyRules to Golang by [@jiminoc](https://github.com/jiminoc)
-* [EasyRulesGroovy](https://github.com/will-gilbert/easyrules-tutorials-groovy) : A port of EasyRules tutorials to Groovy by [@will-gilbert](https://github.com/will-gilbert)
-* [EasyRulesCsharp](https://github.com/feldrim/EasyRulesCsharp) : A port of EasyRules to CSharp (WIP) by [@feldrim](https://github.com/feldrim)
-
-## Who is using Easy Rules?
-
-* [Apache Nifi](https://nifi.apache.org) (see [Nifi EasyRules Bundle](https://github.com/apache/nifi/tree/rel/nifi-1.12.1/nifi-nar-bundles/nifi-easyrules-bundle))
-* [Open Remote](https://openremote.io) (see [build.gradle](https://github.com/openremote/openremote/blob/v1.0.4/model/build.gradle#L27))
-* [Open Smart Register Platform](http://smartregister.org) (see [build.gradle](https://github.com/OpenSRP/opensrp-client-anc/blob/v1.5.0/opensrp-anc/build.gradle#L196))
-* [Toad Edge by Quest](https://support.quest.com/fr-fr/technical-documents/toad-edge/2.1/user-guide/14)
-* [Extreme Networks](https://cloud.kapostcontent.net/pub/c4c24aae-b82d-44e4-8d86-01c235e4b40f/open-source-declaration-for-extr-xmc-8-dot-5)
+If you believe you found a bug or have any question, please use the [issue tracker](https://github.com/alexparlett/simple-rules/issues).
 
 ## Credits
 
@@ -193,12 +137,12 @@ Many thanks to [YourKit, LLC](https://www.yourkit.com/) for providing a free lic
 
 ## License
 
-Easy Rules is released under the terms of the MIT license:
+Simple Rules has been released under the terms of the MIT license:
 
 ```
 The MIT License (MIT)
 
-Copyright (c) 2021 Mahmoud Ben Hassine (mahmoud.benhassine@icloud.com)
+Copyright (c) 2021 Alex Parlett (alex.parlett@homonoia-studios.co.uk)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
