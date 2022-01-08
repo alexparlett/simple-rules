@@ -86,11 +86,11 @@ public class ConditionalRuleGroupTest {
      */
 
     // primaryRule should not be executed
-    Assertions.assertThat(conditionalRule.isExecuted()).isFalse();
+    Assertions.assertThat(conditionalRule.hasFired()).isFalse();
     //Rule 1 should not be executed
-    Assertions.assertThat(rule1.isExecuted()).isFalse();
+    Assertions.assertThat(rule1.hasFired()).isFalse();
     //Rule 2 should not be executed
-    Assertions.assertThat(rule2.isExecuted()).isFalse();
+    Assertions.assertThat(rule2.hasFired()).isFalse();
   }
 
   @Test
@@ -108,11 +108,11 @@ public class ConditionalRuleGroupTest {
      */
 
     // primaryRule should be executed
-    Assertions.assertThat(conditionalRule.isExecuted()).isTrue();
+    Assertions.assertThat(conditionalRule.hasFired()).isTrue();
     //Rule 1 should not be executed
-    Assertions.assertThat(rule1.isExecuted()).isFalse();
+    Assertions.assertThat(rule1.hasFired()).isFalse();
     //Rule 2 should be executed
-    Assertions.assertThat(rule2.isExecuted()).isTrue();
+    Assertions.assertThat(rule2.hasFired()).isTrue();
   }
 
   @Test
@@ -125,11 +125,11 @@ public class ConditionalRuleGroupTest {
 
     // Then
     // primaryRule should be executed
-    Assertions.assertThat(conditionalRule.isExecuted()).isTrue();
+    Assertions.assertThat(conditionalRule.hasFired()).isTrue();
     //Rule 1 should be executed
-    Assertions.assertThat(rule1.isExecuted()).isTrue();
+    Assertions.assertThat(rule1.hasFired()).isTrue();
     // Rule 2 should not be executed
-    Assertions.assertThat(rule2.isExecuted()).isFalse();
+    Assertions.assertThat(rule2.hasFired()).isFalse();
   }
 
   @Test
@@ -142,7 +142,7 @@ public class ConditionalRuleGroupTest {
     rulesEngine.fire(rules, facts);
 
     // Then
-    Assertions.assertThat(conditionalRule.isExecuted()).isTrue();
+    Assertions.assertThat(conditionalRule.hasFired()).isTrue();
     assertThat(rule.isExecuted()).isTrue();
   }
 
@@ -159,7 +159,7 @@ public class ConditionalRuleGroupTest {
     rulesEngine.fire(rules, facts);
 
     // Then
-    Assertions.assertThat(conditionalRule.isExecuted()).isTrue();
+    Assertions.assertThat(conditionalRule.hasFired()).isTrue();
     assertThat(rule.isExecuted()).isTrue();
     assertThat(annotatedRule.isExecuted()).isFalse();
   }
@@ -334,7 +334,7 @@ public class ConditionalRuleGroupTest {
 
     @Override
     public void execute(Facts facts) {
-      this.executed.set(true);
+      this.fired.set(true);
       actions.add(name);
     }
 

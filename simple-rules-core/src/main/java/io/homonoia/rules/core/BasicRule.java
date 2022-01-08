@@ -63,7 +63,7 @@ public class BasicRule implements Rule {
   /**
    * Rule execution state.
    */
-  protected final AtomicBoolean executed = new AtomicBoolean(false);
+  protected final AtomicBoolean fired = new AtomicBoolean(false);
 
   /**
    * Create a new {@link BasicRule}.
@@ -134,10 +134,12 @@ public class BasicRule implements Rule {
     // no op
   }
 
+  @Override
   public String getName() {
     return name;
   }
 
+  @Override
   public String getDescription() {
     return description;
   }
@@ -146,6 +148,7 @@ public class BasicRule implements Rule {
     this.description = description;
   }
 
+  @Override
   public int getPriority() {
     return priority;
   }
@@ -154,6 +157,7 @@ public class BasicRule implements Rule {
     this.priority = priority;
   }
 
+  @Override
   public boolean getLoop() {
     return loop;
   }
@@ -162,8 +166,9 @@ public class BasicRule implements Rule {
     this.loop = loop;
   }
 
-  public boolean isExecuted() {
-    return executed.get();
+  @Override
+  public boolean hasFired() {
+    return fired.get();
   }
 
   /*

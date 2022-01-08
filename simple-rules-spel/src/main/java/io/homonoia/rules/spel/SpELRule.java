@@ -153,7 +153,7 @@ public class SpELRule extends BasicRule {
 
   @Override
   public boolean evaluate(Facts facts) {
-    if (!getLoop() && executed.get()) {
+    if (!getLoop() && fired.get()) {
       return false;
     }
     return condition.evaluate(facts);
@@ -161,7 +161,7 @@ public class SpELRule extends BasicRule {
 
   @Override
   public void execute(Facts facts) throws Exception {
-    executed.getAndSet(true);
+    fired.getAndSet(true);
     for (Action action : actions) {
       action.execute(facts);
     }

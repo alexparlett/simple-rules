@@ -91,7 +91,7 @@ public class JexlRule extends BasicRule {
   @Override
   public boolean evaluate(Facts facts) {
     Objects.requireNonNull(facts, "facts cannot be null");
-    if (!getLoop() && executed.get()) {
+    if (!getLoop() && fired.get()) {
       return false;
     }
     return condition.evaluate(facts);
@@ -100,7 +100,7 @@ public class JexlRule extends BasicRule {
   @Override
   public void execute(Facts facts) throws Exception {
     Objects.requireNonNull(facts, "facts cannot be null");
-    executed.getAndSet(true);
+    fired.getAndSet(true);
     for (Action action : actions) {
       action.execute(facts);
     }

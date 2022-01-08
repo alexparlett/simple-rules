@@ -91,6 +91,13 @@ public interface Rule extends Comparable<Rule> {
   }
 
   /**
+   * Getter for rule fired status.
+   *
+   * @return rule fired status
+   */
+  boolean hasFired();
+
+  /**
    * This method implements the rule's condition(s).
    * <strong>Implementations should handle any runtime exception and return true/false
    * accordingly</strong>
