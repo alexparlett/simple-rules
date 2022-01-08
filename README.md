@@ -8,7 +8,7 @@
 <div align="center">
 
 [![MIT license](http://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat)](http://opensource.org/licenses/MIT)
-[![Build](https://github.com/alexparlett/simple-rules/actions/workflows/build.yml/badge.svg)](https://github.com/alexparlett/simple-rules/actions/workflows/build.yml)
+[![Build Status](https://github.com/alexparlett/simple-rules/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/alexparlett/simple-rules/actions/workflows/build.yml)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.homonoia/simple-rules-core/badge.svg?style=flat)](http://search.maven.org/#artifactdetails|org.homonoia|simple-rules-core|4.1.0|)
 [![Javadoc](https://www.javadoc.io/badge/io.homonoia/simple-rules-core.svg)](http://www.javadoc.io/doc/io.homonoia/simple-rules-core)
 [![Project status](https://img.shields.io/badge/Project%20status-Active-brightgreen)](https://img.shields.io/badge/Project%20status-Active-brightgreen)
@@ -19,10 +19,13 @@
 
 ## Latest news
 
+* 08/01/2022: Version 5.0.0 is out with changes to how SPeL actions can update facts and to introduce the ability to 
+  control whether rules can fire multiple times and refactor the Inference engines reliance on the Default engine.
 * 06/12/2020: Version 4.1 is out with a new module to
   support [Apache JEXL](https://commons.apache.org/proper/commons-jexl/) as an additional supported
-  expression language! You can find all details about other changes in
-  the [release notes](https://github.com/alexparlett/simple-rules/releases).
+  expression language!.
+
+> You can find all details about other changes in the [release notes](https://github.com/alexparlett/simple-rules/releases)
 
 ## What is Simple Rules?
 
@@ -35,6 +38,9 @@ of [Martin Fowler](http://martinfowler.com/) in which Martin says:
 This is exactly what Simple Rules does, it provides the `Rule` abstraction to create rules with
 conditions and actions, and the `RulesEngine` API that runs through a set of rules to evaluate
 conditions and execute actions.
+
+This is built off the fantastic work of [Easy Rules](https://github.com/j-easy/easy-rules) by
+Mahmoud Ben Hassine and forked to define differences in the api and bring out of maintenance mode.
 
 ## Core features
 
@@ -131,9 +137,6 @@ This is the hello world of Simple Rules. You can find other examples like
 the [Shop](https://github.com/alexparlett/simple-rules/wiki/shop)
 , [Airco](https://github.com/alexparlett/simple-rules/wiki/air-conditioning)
 or [WebApp](https://github.com/alexparlett/simple-rules/wiki/web-app) tutorials in the wiki.
-
-This is built off the fantastic work of [Easy Rules](https://github.com/j-easy/easy-rules) by
-Mahmoud Ben Hassine and forked to define differences in the api and bring out of maintenance mode.
 
 ## Contribution
 
