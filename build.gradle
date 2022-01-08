@@ -1,0 +1,7 @@
+// Root build.gradle
+plugins {
+    id 'com.palantir.git-version' version '0.12.3'
+}
+
+group = 'com.example'
+version = gitVersion(prefix:'simple-rules-')
