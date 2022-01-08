@@ -142,6 +142,18 @@ You are welcome to contribute to the project with pull requests on GitHub.
 If you believe you found a bug or have any question, please use
 the [issue tracker](https://github.com/alexparlett/simple-rules/issues).
 
+## Versioning
+
+The project uses [Semver](https://github.com/jmongard/Git.SemVersioning.Gradle)
+
+Commit messages control the versioning
+
+```fix: ...``` patch
+
+```feat: ...``` minor
+
+```feat!: ...``` major 
+
 ## Credits
 
 ![YourKit Java Profiler](https://www.yourkit.com/images/yklogo.png)
