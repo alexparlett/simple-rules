@@ -157,14 +157,6 @@ Commit messages control the versioning
 
 ```feat!: ...``` major 
 
-## Credits
-
-![YourKit Java Profiler](https://www.yourkit.com/images/yklogo.png)
-
-Many thanks to [YourKit, LLC](https://www.yourkit.com/) for providing a free license
-of [YourKit Java Profiler](https://www.yourkit.com/java/profiler/index.jsp) to support the
-development of Easy Rules.
-
 ## License
 
 Simple Rules has been released under the terms of the MIT license:
