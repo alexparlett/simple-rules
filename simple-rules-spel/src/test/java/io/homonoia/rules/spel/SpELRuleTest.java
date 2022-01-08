@@ -24,10 +24,10 @@
 
 package io.homonoia.rules.spel;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import io.homonoia.rules.api.Facts;
 import org.junit.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class SpELRuleTest {
 
@@ -68,7 +68,7 @@ public class SpELRuleTest {
   }
 
   @Test
-  public void whenTheConditionIsTrue_thenActionsShouldBeExecutedAndFactsUpdated() throws Exception {
+  public void whenTheConditionIsTrue_thenActionsShouldBeExecutedAndFactsUpdatedViaPut() throws Exception {
     // given
     Person foo = new Person("foo", 20);
     Facts facts = new Facts();
@@ -76,7 +76,7 @@ public class SpELRuleTest {
 
     SpELRule spelRule = new SpELRule().name("spel rule").description("rule using SpEL").priority(1)
         .when("#person.age > 18")
-        .then("insert(\"person2\", new io.homonoia.rules.spel.Person(\"bar\", 17))");
+        .then("put(\"person2\", new io.homonoia.rules.spel.Person(\"bar\", 17))");
 
     // when
     spelRule.execute(facts);
@@ -84,7 +84,7 @@ public class SpELRuleTest {
     // then
     assertThat(facts.getFact("person2")).isNotNull();
 
-    final Person person2 = (Person) facts.getFact("person2").getValue();
+    final Person person2 = facts.getFact("person2").getValue(Person.class);
     assertThat(person2.getName()).isEqualTo("bar");
     assertThat(person2.getAge()).isEqualTo(17);
   }

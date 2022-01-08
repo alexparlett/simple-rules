@@ -26,15 +26,18 @@ package io.homonoia.rules.spel;
 
 import io.homonoia.rules.api.Condition;
 import io.homonoia.rules.api.Facts;
-import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.expression.MapAccessor;
 import org.springframework.expression.BeanResolver;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.ParserContext;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
+import org.springframework.expression.spel.support.ReflectivePropertyAccessor;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
+
+import java.util.Optional;
 
 /**
  * This class is an implementation of {@link Condition} that uses
@@ -106,8 +109,9 @@ public class SpELCondition implements Condition {
   public boolean evaluate(Facts facts) {
     try {
       StandardEvaluationContext context = new StandardEvaluationContext();
-      context.setRootObject(facts);
       context.setVariables(facts.asMap());
+      context.addPropertyAccessor(new MapAccessor());
+      context.addPropertyAccessor(new ReflectivePropertyAccessor());
       if (beanResolver != null) {
         context.setBeanResolver(beanResolver);
       }

@@ -24,21 +24,21 @@
 
 package io.homonoia.rules.mvel;
 
-import static com.github.stefanbirkner.systemlambda.SystemLambda.tapSystemOutNormalized;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
 import io.homonoia.rules.api.Action;
 import io.homonoia.rules.api.Facts;
 import org.junit.Test;
 import org.mvel2.ParserContext;
+
+import static com.github.stefanbirkner.systemlambda.SystemLambda.tapSystemOutNormalized;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class MVELActionTest {
 
   @Test
   public void testMVELActionExecution() throws Exception {
     // given
-    Action markAsAdult = new MVELAction("facts.get(\"person\").setAdult(true);");
+    Action markAsAdult = new MVELAction("person.setAdult(true);");
     Facts facts = new Facts();
     Person foo = new Person("foo", 20);
     facts.put("person", foo);

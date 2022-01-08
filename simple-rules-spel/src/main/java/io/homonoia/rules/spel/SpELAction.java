@@ -27,18 +27,13 @@ package io.homonoia.rules.spel;
 import io.homonoia.rules.api.Action;
 import io.homonoia.rules.api.Fact;
 import io.homonoia.rules.api.Facts;
-import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.expression.MapAccessor;
-import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.expression.BeanResolver;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
-import org.springframework.expression.MethodExecutor;
-import org.springframework.expression.MethodResolver;
 import org.springframework.expression.ParserContext;
-import org.springframework.expression.TypedValue;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.ReflectivePropertyAccessor;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
@@ -121,7 +116,6 @@ public class SpELAction implements Action {
       context.setVariables(facts.asMap());
       context.addPropertyAccessor(new MapAccessor());
       context.addPropertyAccessor(new ReflectivePropertyAccessor());
-      context.addMethodResolver(insetMethodResolver(facts));
       if (beanResolver != null) {
         context.setBeanResolver(beanResolver);
       }
@@ -130,28 +124,5 @@ public class SpELAction implements Action {
       LOGGER.error("Unable to execute expression: '" + expression + "' on facts: " + facts, e);
       throw e;
     }
-  }
-
-  private MethodResolver insetMethodResolver(final Facts facts) {
-    return (evaluationContext, targetObject, name, argumentTypes) -> {
-      if (name.equals("insert") && argumentTypes.size() == 2) {
-        return insertMethodExecutor(facts, argumentTypes);
-      }
-      return null;
-    };
-  }
-
-  private MethodExecutor insertMethodExecutor(final Facts facts,
-      final List<TypeDescriptor> argumentTypes) {
-    return (evaluationContext, target, arguments) -> {
-      TypeDescriptor valueType = argumentTypes.get(1);
-      final String name = (String) arguments[0];
-      final Object value = arguments[1];
-      final Class<?> type = valueType.getType();
-      Fact<?> fact = createFact(name, value, type);
-      facts.add(fact);
-      evaluationContext.setVariable(name, value);
-      return new TypedValue(fact);
-    };
   }
 }

@@ -24,9 +24,6 @@
 
 package io.homonoia.rules.spel;
 
-import static com.github.stefanbirkner.systemlambda.SystemLambda.tapSystemOutNormalized;
-import static org.assertj.core.api.Assertions.assertThat;
-
 import io.homonoia.rules.api.Condition;
 import io.homonoia.rules.api.Facts;
 import org.assertj.core.api.Assertions;
@@ -36,6 +33,9 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.expression.BeanResolver;
 import org.springframework.expression.ParserContext;
 import org.springframework.expression.common.TemplateParserContext;
+
+import static com.github.stefanbirkner.systemlambda.SystemLambda.tapSystemOutNormalized;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class SpELConditionTest {
 

@@ -68,6 +68,16 @@ public class Fact<T> {
     return value;
   }
 
+  /**
+   * Get the fact value.
+   *
+   * @param clazz class of the fact
+   * @return fact value
+   */
+  public <K> K getValue(Class<K> clazz) {
+    return clazz.cast(value);
+  }
+
   @Override
   public String toString() {
     return "Fact{" +
