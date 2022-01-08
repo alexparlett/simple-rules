@@ -27,27 +27,20 @@ package io.homonoia.rules.spel;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.homonoia.rules.api.Facts;
-import org.junit.Before;
 import org.junit.Test;
 
 public class SpELRuleTest {
-
-  private Facts facts;
-  private SpELRule spelRule;
-
-  @Before
-  public void setUp() {
-    facts = new Facts();
-    spelRule = new SpELRule().name("spel rule").description("rule using SpEL").priority(1)
-        .when("#{ ['person'].age > 18 }")
-        .then("#{ ['person'].setAdult(true) }");
-  }
 
   @Test
   public void whenTheRuleIsTriggered_thenConditionShouldBeEvaluated() {
     // given
     Person person = new Person("foo", 20);
+    Facts facts = new Facts();
     facts.put("person", person);
+
+    SpELRule spelRule = new SpELRule().name("spel rule").description("rule using SpEL").priority(1)
+        .when("#person.age > 18")
+        .then("#person.setAdult(true)");
 
     // when
     boolean evaluationResult = spelRule.evaluate(facts);
@@ -60,7 +53,12 @@ public class SpELRuleTest {
   public void whenTheConditionIsTrue_thenActionsShouldBeExecuted() throws Exception {
     // given
     Person foo = new Person("foo", 20);
+    Facts facts = new Facts();
     facts.put("person", foo);
+
+    SpELRule spelRule = new SpELRule().name("spel rule").description("rule using SpEL").priority(1)
+        .when("#person.age > 18")
+        .then("#person.setAdult(true)");
 
     // when
     spelRule.execute(facts);
@@ -70,18 +68,25 @@ public class SpELRuleTest {
   }
 
   @Test
-  public void testRuleWithRootVariable() throws Exception {
+  public void whenTheConditionIsTrue_thenActionsShouldBeExecutedAndFactsUpdated() throws Exception {
     // given
     Person foo = new Person("foo", 20);
+    Facts facts = new Facts();
     facts.put("person", foo);
-    spelRule = new SpELRule().name("rn").description("rd").priority(1)
-        .when("#{ #root['person'].age > 18 }")
-        .then("#{ #root['person'].setAdult(true) }");
+
+    SpELRule spelRule = new SpELRule().name("spel rule").description("rule using SpEL").priority(1)
+        .when("#person.age > 18")
+        .then("insert(\"person2\", new io.homonoia.rules.spel.Person(\"bar\", 17))");
 
     // when
     spelRule.execute(facts);
 
     // then
-    assertThat(foo.isAdult()).isTrue();
+    assertThat(facts.getFact("person2")).isNotNull();
+
+    final Person person2 = (Person) facts.getFact("person2").getValue();
+    assertThat(person2.getName()).isEqualTo("bar");
+    assertThat(person2.getAge()).isEqualTo(17);
   }
+
 }

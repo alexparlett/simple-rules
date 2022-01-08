@@ -45,24 +45,23 @@ public class SpELRule extends BasicRule {
 
   private Condition condition = Condition.FALSE;
   private final List<Action> actions = new ArrayList<>();
+  private final BeanResolver beanResolver;
   private final ParserContext parserContext;
-  private BeanResolver beanResolver;
 
   /**
    * Create a new SpEL rule.
    */
   public SpELRule() {
-    this(ParserContext.TEMPLATE_EXPRESSION);
+    this(null, null);
   }
 
   /**
    * Create a new SpEL rule.
    *
-   * @param parserContext used when parsing expressions
+   * @param parserContext used to resolve expressions
    */
   public SpELRule(ParserContext parserContext) {
-    super(Rule.DEFAULT_NAME, Rule.DEFAULT_DESCRIPTION, Rule.DEFAULT_PRIORITY, Rule.DEFAULT_LOOP);
-    this.parserContext = parserContext;
+    this(null, parserContext);
   }
 
   /**
@@ -71,21 +70,19 @@ public class SpELRule extends BasicRule {
    * @param beanResolver used to resolve bean references in expressions
    */
   public SpELRule(BeanResolver beanResolver) {
-    super(Rule.DEFAULT_NAME, Rule.DEFAULT_DESCRIPTION, Rule.DEFAULT_PRIORITY);
-    this.parserContext = ParserContext.TEMPLATE_EXPRESSION;
-    this.beanResolver = beanResolver;
+    this(beanResolver, null);
   }
 
   /**
    * Create a new SpEL rule.
    *
-   * @param parserContext used when parsing expressions
    * @param beanResolver  used to resolve bean references in expressions
+   * @param parserContext used to resolve expressions
    */
-  public SpELRule(ParserContext parserContext, BeanResolver beanResolver) {
+  public SpELRule(BeanResolver beanResolver, ParserContext parserContext) {
     super(Rule.DEFAULT_NAME, Rule.DEFAULT_DESCRIPTION, Rule.DEFAULT_PRIORITY);
-    this.parserContext = parserContext;
     this.beanResolver = beanResolver;
+    this.parserContext = parserContext;
   }
 
   /**
@@ -139,7 +136,7 @@ public class SpELRule extends BasicRule {
    * @return this rule
    */
   public SpELRule when(String condition) {
-    this.condition = new SpELCondition(condition, parserContext, beanResolver);
+    this.condition = new SpELCondition(condition, beanResolver, parserContext);
     return this;
   }
 
@@ -150,7 +147,7 @@ public class SpELRule extends BasicRule {
    * @return this rule
    */
   public SpELRule then(String action) {
-    this.actions.add(new SpELAction(action, parserContext, beanResolver));
+    this.actions.add(new SpELAction(action, beanResolver, parserContext));
     return this;
   }
 

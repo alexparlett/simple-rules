@@ -8,14 +8,14 @@
         "name": "rule1",
         "condition": "true",
         "actions": [
-          "#{ T(System).out.println() }"
+          "T(System).out.println()"
         ]
       },
       {
         "name": "rule2",
         "condition": "false",
         "actions": [
-          "#{ T(System).out.println() }"
+          "T(System).out.println()"
         ]
       }
     ]

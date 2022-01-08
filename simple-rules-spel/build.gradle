@@ -13,7 +13,7 @@ dependencies {
     implementation project(':simple-rules-support')
     implementation 'org.springframework:spring-expression:5.3.1'
     implementation 'org.slf4j:slf4j-simple:1.7.30'
-    testImplementation 'org.springframework:spring-context:5.3.1'
+    implementation 'org.springframework:spring-context:5.3.1'
     testImplementation 'junit:junit:4.13.1'
     testImplementation 'org.assertj:assertj-core:3.18.1'
     testImplementation 'org.mockito:mockito-core:3.6.0'

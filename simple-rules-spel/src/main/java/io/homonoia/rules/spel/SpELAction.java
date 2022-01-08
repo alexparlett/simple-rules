@@ -25,14 +25,22 @@
 package io.homonoia.rules.spel;
 
 import io.homonoia.rules.api.Action;
+import io.homonoia.rules.api.Fact;
 import io.homonoia.rules.api.Facts;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.expression.MapAccessor;
+import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.expression.BeanResolver;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
+import org.springframework.expression.MethodExecutor;
+import org.springframework.expression.MethodResolver;
 import org.springframework.expression.ParserContext;
+import org.springframework.expression.TypedValue;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
+import org.springframework.expression.spel.support.ReflectivePropertyAccessor;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 
 /**
@@ -50,10 +58,9 @@ public class SpELAction implements Action {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(SpELAction.class);
 
-  private final ExpressionParser parser = new SpelExpressionParser();
   private final String expression;
   private final Expression compiledExpression;
-  private BeanResolver beanResolver;
+  private final BeanResolver beanResolver;
 
   /**
    * Create a new {@link SpELAction}.
@@ -61,7 +68,7 @@ public class SpELAction implements Action {
    * @param expression the action written in expression language
    */
   public SpELAction(String expression) {
-    this(expression, ParserContext.TEMPLATE_EXPRESSION);
+    this(expression, null, null);
   }
 
   /**
@@ -71,46 +78,80 @@ public class SpELAction implements Action {
    * @param beanResolver the bean resolver used to resolve bean references
    */
   public SpELAction(String expression, BeanResolver beanResolver) {
-    this(expression, ParserContext.TEMPLATE_EXPRESSION, beanResolver);
+    this(expression, beanResolver, null);
   }
+
 
   /**
    * Create a new {@link SpELAction}.
    *
    * @param expression    the action written in expression language
-   * @param parserContext the SpEL parser context
+   * @param parserContext the context used to parse the expression
    */
   public SpELAction(String expression, ParserContext parserContext) {
-    this.expression = expression;
-    compiledExpression = parser.parseExpression(expression, parserContext);
+    this(expression, null, parserContext);
   }
+
 
   /**
    * Create a new {@link SpELAction}.
    *
    * @param expression    the action written in expression language
    * @param beanResolver  the bean resolver used to resolve bean references
-   * @param parserContext the SpEL parser context
+   * @param parserContext the context used to parse the expression
    */
-  public SpELAction(String expression, ParserContext parserContext, BeanResolver beanResolver) {
+  public SpELAction(String expression, BeanResolver beanResolver, ParserContext parserContext) {
+    ExpressionParser parser = new SpelExpressionParser();
+
     this.expression = expression;
     this.beanResolver = beanResolver;
-    compiledExpression = parser.parseExpression(expression, parserContext);
+    this.compiledExpression = parser.parseExpression(expression, parserContext);
+  }
+
+
+  public <K> Fact<K> createFact(String name, Object value, Class<K> type) {
+    return new Fact<>(name, type.cast(value));
   }
 
   @Override
   public void execute(Facts facts) {
     try {
       StandardEvaluationContext context = new StandardEvaluationContext();
-      context.setRootObject(facts.asMap());
+      context.setRootObject(facts);
       context.setVariables(facts.asMap());
+      context.addPropertyAccessor(new MapAccessor());
+      context.addPropertyAccessor(new ReflectivePropertyAccessor());
+      context.addMethodResolver(insetMethodResolver(facts));
       if (beanResolver != null) {
         context.setBeanResolver(beanResolver);
       }
       compiledExpression.getValue(context);
     } catch (Exception e) {
-      LOGGER.error("Unable to evaluate expression: '" + expression + "' on facts: " + facts, e);
+      LOGGER.error("Unable to execute expression: '" + expression + "' on facts: " + facts, e);
       throw e;
     }
+  }
+
+  private MethodResolver insetMethodResolver(final Facts facts) {
+    return (evaluationContext, targetObject, name, argumentTypes) -> {
+      if (name.equals("insert") && argumentTypes.size() == 2) {
+        return insertMethodExecutor(facts, argumentTypes);
+      }
+      return null;
+    };
+  }
+
+  private MethodExecutor insertMethodExecutor(final Facts facts,
+      final List<TypeDescriptor> argumentTypes) {
+    return (evaluationContext, target, arguments) -> {
+      TypeDescriptor valueType = argumentTypes.get(1);
+      final String name = (String) arguments[0];
+      final Object value = arguments[1];
+      final Class<?> type = valueType.getType();
+      Fact<?> fact = createFact(name, value, type);
+      facts.add(fact);
+      evaluationContext.setVariable(name, value);
+      return new TypedValue(fact);
+    };
   }
 }

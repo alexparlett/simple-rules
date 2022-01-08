@@ -39,7 +39,7 @@ public class SpELActionTest {
   @Test
   public void testSpELActionExecution() throws Exception {
     // given
-    Action markAsAdult = new SpELAction("#{ ['person'].setAdult(true) }");
+    Action markAsAdult = new SpELAction("#person.setAdult(true)");
     Facts facts = new Facts();
     Person foo = new Person("foo", 20);
     facts.put("person", foo);
@@ -54,7 +54,7 @@ public class SpELActionTest {
   @Test
   public void testSpELFunctionExecution() throws Exception {
     // given
-    Action printAction = new SpELAction("#{ T(io.homonoia.rules.spel.Person).sayHello() }");
+    Action printAction = new SpELAction("T(io.homonoia.rules.spel.Person).sayHello()");
     Facts facts = new Facts();
 
     // when
@@ -68,7 +68,7 @@ public class SpELActionTest {
   @Test
   public void testSpELActionExecutionWithFailure() {
     // given
-    Action action = new SpELAction("#{ T(io.homonoia.rules.spel.Person).sayHi() }");
+    Action action = new SpELAction("T(io.homonoia.rules.spel.Person).sayHi()");
     Facts facts = new Facts();
     Person foo = new Person("foo", 20);
     facts.put("person", foo);

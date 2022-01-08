@@ -42,7 +42,7 @@ public class SpELConditionTest {
   @Test
   public void testSpELExpressionEvaluation() {
     // given
-    Condition isAdult = new SpELCondition("#{ ['person'].age > 18 }");
+    Condition isAdult = new SpELCondition("#person.age > 18");
     Facts facts = new Facts();
     facts.put("person", new Person("foo", 20));
     // when
@@ -56,7 +56,7 @@ public class SpELConditionTest {
   @Test
   public void whenDeclaredFactIsNotPresent_thenShouldReturnFalse() {
     // given
-    Condition isHot = new SpELCondition("#{ ['temperature'] > 30 }");
+    Condition isHot = new SpELCondition("#temperature > 30");
     Facts facts = new Facts();
 
     // when
@@ -89,9 +89,9 @@ public class SpELConditionTest {
 
     SpELRule spELRule = new SpELRule(beanResolver);
     // setting an condition to be evaluated
-    spELRule.when("#{ ['person'].age >= 18 }");
+    spELRule.when("#person.age >= 18");
     // provided an bean resolver that can resolve "myGreeter"
-    spELRule.then("#{ @myGreeter.greeting(#person.name) }");
+    spELRule.then("@myGreeter.greeting(#person.name)");
 
     // given
     Facts facts = new Facts();

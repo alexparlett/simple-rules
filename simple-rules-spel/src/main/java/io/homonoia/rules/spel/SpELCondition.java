@@ -26,6 +26,9 @@ package io.homonoia.rules.spel;
 
 import io.homonoia.rules.api.Condition;
 import io.homonoia.rules.api.Facts;
+import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.expression.BeanResolver;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
@@ -46,59 +49,73 @@ import org.springframework.expression.spel.support.StandardEvaluationContext;
  */
 public class SpELCondition implements Condition {
 
-  private final ExpressionParser parser = new SpelExpressionParser();
+  private static final Logger LOGGER = LoggerFactory.getLogger(SpELCondition.class);
+
+
+  private final String expression;
   private final Expression compiledExpression;
-  private BeanResolver beanResolver;
+  private final BeanResolver beanResolver;
 
   /**
-   * Create a new {@link SpELCondition}.
+   * Create a new {@link SpELAction}.
    *
-   * @param expression the condition written in expression language
+   * @param expression the action written in expression language
    */
   public SpELCondition(String expression) {
-    this(expression, ParserContext.TEMPLATE_EXPRESSION);
+    this(expression, null, null);
   }
 
   /**
    * Create a new {@link SpELCondition}.
    *
-   * @param expression   the condition written in expression language
+   * @param expression   the action written in expression language
    * @param beanResolver the bean resolver used to resolve bean references
    */
   public SpELCondition(String expression, BeanResolver beanResolver) {
-    this(expression, ParserContext.TEMPLATE_EXPRESSION, beanResolver);
+    this(expression, beanResolver, null);
   }
+
 
   /**
    * Create a new {@link SpELCondition}.
    *
-   * @param expression    the condition written in expression language
-   * @param parserContext the SpEL parser context
+   * @param expression    the action written in expression language
+   * @param parserContext the context used to parse the expression
    */
   public SpELCondition(String expression, ParserContext parserContext) {
-    compiledExpression = parser.parseExpression(expression, parserContext);
+    this(expression, null, parserContext);
   }
+
 
   /**
    * Create a new {@link SpELCondition}.
    *
-   * @param expression    the condition written in expression language
+   * @param expression    the action written in expression language
    * @param beanResolver  the bean resolver used to resolve bean references
-   * @param parserContext the SpEL parser context
+   * @param parserContext the context used to parse the expression
    */
-  public SpELCondition(String expression, ParserContext parserContext, BeanResolver beanResolver) {
+  public SpELCondition(String expression, BeanResolver beanResolver, ParserContext parserContext) {
+    ExpressionParser parser = new SpelExpressionParser();
+
+    this.expression = expression;
     this.beanResolver = beanResolver;
-    compiledExpression = parser.parseExpression(expression, parserContext);
+    this.compiledExpression = parser.parseExpression(expression, parserContext);
   }
 
   @Override
   public boolean evaluate(Facts facts) {
-    StandardEvaluationContext context = new StandardEvaluationContext();
-    context.setRootObject(facts.asMap());
-    context.setVariables(facts.asMap());
-    if (beanResolver != null) {
-      context.setBeanResolver(beanResolver);
+    try {
+      StandardEvaluationContext context = new StandardEvaluationContext();
+      context.setRootObject(facts);
+      context.setVariables(facts.asMap());
+      if (beanResolver != null) {
+        context.setBeanResolver(beanResolver);
+      }
+      return Optional.ofNullable(compiledExpression.getValue(context, Boolean.class))
+          .orElse(false);
+    } catch (Exception e) {
+      LOGGER.error("Unable to evaluate expression: '" + expression + "' on facts: " + facts, e);
+      throw e;
     }
-    return compiledExpression.getValue(context, Boolean.class);
   }
 }

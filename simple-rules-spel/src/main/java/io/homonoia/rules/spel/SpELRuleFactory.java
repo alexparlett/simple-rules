@@ -42,8 +42,8 @@ import org.springframework.expression.ParserContext;
 public class SpELRuleFactory extends AbstractRuleFactory {
 
   private final RuleDefinitionReader reader;
-  private BeanResolver beanResolver;
-  private ParserContext parserContext;
+  private final BeanResolver beanResolver;
+  private final ParserContext parserContext;
 
   /**
    * Create a new {@link SpELRuleFactory} with a given reader.
@@ -53,7 +53,7 @@ public class SpELRuleFactory extends AbstractRuleFactory {
    * @see io.homonoia.rules.support.reader.JsonRuleDefinitionReader
    */
   public SpELRuleFactory(RuleDefinitionReader reader) {
-    this(reader, ParserContext.TEMPLATE_EXPRESSION);
+    this(reader, null, null);
   }
 
   /**
@@ -65,8 +65,7 @@ public class SpELRuleFactory extends AbstractRuleFactory {
    * @see io.homonoia.rules.support.reader.JsonRuleDefinitionReader
    */
   public SpELRuleFactory(RuleDefinitionReader reader, ParserContext parserContext) {
-    this.reader = reader;
-    this.parserContext = parserContext;
+    this(reader, parserContext, null);
   }
 
   /**
@@ -78,8 +77,7 @@ public class SpELRuleFactory extends AbstractRuleFactory {
    * @see io.homonoia.rules.support.reader.JsonRuleDefinitionReader
    */
   public SpELRuleFactory(RuleDefinitionReader reader, BeanResolver beanResolver) {
-    this.reader = reader;
-    this.beanResolver = beanResolver;
+    this(reader, null, beanResolver);
   }
 
   /**
@@ -134,7 +132,7 @@ public class SpELRuleFactory extends AbstractRuleFactory {
   }
 
   protected Rule createSimpleRule(RuleDefinition ruleDefinition) {
-    SpELRule spELRule = new SpELRule(parserContext, beanResolver)
+    SpELRule spELRule = new SpELRule(beanResolver, parserContext)
         .name(ruleDefinition.getName())
         .description(ruleDefinition.getDescription())
         .priority(ruleDefinition.getPriority())
