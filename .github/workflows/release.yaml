@@ -1,0 +1,22 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "simple-rules-*.*.*"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Update release notes
+        uses: BobAnkh/auto-generate-changelog@master
+        with:
+          ACCESS_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          PATH: 'CHANGELOG.md'
+          COMMIT_MESSAGE: 'docs(CHANGELOG): update release notes'
+          TYPE: 'feat!:Breaking Change,feat:Feature,fix:Bug Fixes,docs:Documentation,refactor:Refactor,perf:Performance Improvements'
+      - name: Release
+        uses: softprops/action-gh-release@v1
