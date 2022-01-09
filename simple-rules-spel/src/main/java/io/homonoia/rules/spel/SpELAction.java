@@ -104,7 +104,7 @@ public class SpELAction implements Action {
   }
 
 
-  public <K> Fact<K> createFact(String name, Object value, Class<K> type) {
+  private <K> Fact<K> createFact(String name, Object value, Class<K> type) {
     return new Fact<>(name, type.cast(value));
   }
 
