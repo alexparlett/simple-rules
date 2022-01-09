@@ -103,11 +103,6 @@ public class SpELAction implements Action {
     this.compiledExpression = parser.parseExpression(expression, parserContext);
   }
 
-
-  private <K> Fact<K> createFact(String name, Object value, Class<K> type) {
-    return new Fact<>(name, type.cast(value));
-  }
-
   @Override
   public void execute(Facts facts) {
     try {
