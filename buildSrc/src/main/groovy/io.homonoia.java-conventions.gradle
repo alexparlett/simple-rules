@@ -2,23 +2,12 @@ import java.time.LocalDate
 
 plugins {
     id 'java-library'
-    id 'maven-publish'
     id 'com.github.joschi.licenser'
+    id "maven-publish"
 }
 
 repositories {
-    mavenLocal()
-    maven {
-        url = uri('https://repo.maven.apache.org/maven2/')
-    }
-
-    maven {
-        url = uri('https://maven.pkg.github.com/b-social/*')
-    }
-
-    maven {
-        url = uri('https://oss.sonatype.org/content/repositories/snapshots')
-    }
+    mavenCentral()
 }
 
 group = 'org.homonoia'
@@ -35,13 +24,29 @@ license {
     }
 }
 
+
 publishing {
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = "https://maven.pkg.github.com/alexparlett/simple-rules"
+            credentials {
+                username = System.getProperty("github.actor") ?: System.getenv("GITHUB_ACTOR")
+                password = System.getProperty("github.token") ?: System.getenv("GITHUB_TOKEN")
+            }
+        }
+    }
     publications {
         maven(MavenPublication) {
-            from(components.java)
+            groupId = project.group
+            artifactId = project.name
+            version = project.version
+
+            from components.java
         }
     }
 }
+
 
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
